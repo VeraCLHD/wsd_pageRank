@@ -9,7 +9,7 @@ class WordNetSearcher:
 	#input: list of word objects
 	def __init__(self, inputWords):
 		self.inputWords = inputWords
-		self.synsets = []
+		self.synsets = set()
 	
 	def getSynsets(self):
 		return self.synsets
@@ -50,7 +50,7 @@ class WordNetSearcher:
 			word.setDeadWord(True)
 		else:
 			word.getSynsets().extend(synsets)
-			self.getSynsets().extend(synsets)
+			self.getSynsets().update(synsets)
 			
 
 if __name__ == "__main__":
