@@ -28,7 +28,31 @@ class Graph(object):
             for node in self.nodes: #declare weights as old weights
                 node.previous_weight = node.weight
             
-                
+            
+    def calculateKPP(self): #key player problem
+        for node in self.nodes: #create a bft for each node
+            kpp_value = 0.0
+            node_list = self.nodes[:]
+            node_list.remove(node)
+            for element in node.neighbours:
+                node_list.remove(element)
+            queue = node.neighbours
+            depth = 0
+            while len(queue)>0:
+                depth +=1
+                neighbours_list = []
+                for element in queue:
+                    kpp_value += 1.0/depth
+                    for el in element.neighbours:
+                        if el in node_list:
+                            node_list.remove(el)
+                            neighbours_list.append(el)
+                queue = neighbours_list
+            node.kpp = kpp_value
+            
+                            
+        
+            
                 
 if __name__ == "__main__":
     Node1 = Node.Node("00000001")    
@@ -44,5 +68,7 @@ if __name__ == "__main__":
     
     g = Graph(["Fisch"], [Node1, Node2, Node3, Node4, Node5], 0.8)
     g.calculatePageRank(g.d)
+    g.calculateKPP()
     for node in g.nodes:
-        print node.weight
+        print node.kpp
+        

@@ -4,6 +4,7 @@ class Node(object):
         self.neighbours = []
         self.previous_weight = 0
         self.weight = 0
+        self.kpp = 0
                 
         self.in_degree = len(self.neighbours)
     
