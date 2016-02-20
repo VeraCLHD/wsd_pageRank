@@ -1,7 +1,10 @@
 class Node(object):
     def __init__(self, name):
         #basic attributes
-        self.name = name
+        if type(name) == str:
+            self.name = name
+        else:
+            sys.stderr.write('illegal type for name. Has to be str')
         self.neighbours = []        
         
         #measures

@@ -3,8 +3,15 @@ import Word
 
 class Graph(object):
     def __init__(self, words, nodes, d):
-        self.words = words
-        self.nodes = nodes
+        if type(words) == list:
+            self.words = words
+        else:
+            sys.stderr.write('illegal type for words. Has to be list')
+        if type(nodes) == list:
+            self.nodes = nodes
+        else:
+            sys.stderr.write('illegal type for nodes. Has to be list')
+
         self.d = d
    
                     

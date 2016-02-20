@@ -52,6 +52,9 @@ class WordNetSearcher:
 			word.getSynsets().extend(synsets)
 			self.getSynsets().update(synsets)
 			
+    def createGraph(self, words):
+        #this class gets a list of words and returns a graph created on wordNet
+            
 
 if __name__ == "__main__":
 	#mock of word objects as input
