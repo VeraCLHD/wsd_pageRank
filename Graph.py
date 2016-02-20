@@ -58,9 +58,8 @@ class Graph(object):
             node.kpp = kpp_value
             
                             
-    def calculateBetweenness(self):
+    def calculateBetweenness(self): #not normalized
         node_zero = self.nodes[1]
-        print node_zero.name
         for node in self.nodes: #find all shortest paths from node to node
             for key in node.tree_dictionary.keys():
                 visited = []
@@ -79,12 +78,64 @@ class Graph(object):
                         visited_node.betweenness += float(visited_node.betweenness_relevance)/queue_betweenness_sum                        
                     queue = visited
                     visited = []
+                
+    def calculateMaximumFlow(self):
         for node in self.nodes:
-            print node.name, node.betweenness
-                
-        
+            node.initialize_residual_graph()
+        self.temp_nodes = self.nodes[:]
+        while len(self.temp_nodes)>0:
+            node1 = self.temp_nodes.pop()
+            nodes2 = self.temp_nodes[:]
+            for node2 in nodes2:
+                #print node1.name, node2.name
+                found_path = True
+                while found_path == True:
+                    result_list = self.createResidualGraph(node1, node2)
+                    #result_list = output of this function: make a breadt first search on the graph and return a shortest path from node to node2
+                    if len(result_list) == 0:
+                        found_path = False
+                    else:
+                        for node_iter in range(len(result_list)-1):
+                            node3 = result_list[node_iter]
+                            node4 = result_list[node_iter+1]
+                            #print node3.name, node4.name
+                            node3.residual_graph_neighbours[node4] +=1
+                            node4.residual_graph_neighbours[node3] -=1
+                        node1.residual_value +=1
+                        node2.residual_value +=1
+                for nodey in self.nodes: #reset all resdiual values for the next round
+                    nodey.reset_residual_values()
+        for node in self.nodes:
+            print node.name, node.residual_value
             
+    def createResidualGraph(self, start_node, end_node):
+        queue = [start_node]
+        visited = [start_node]
+        result = []
+        found = False
+        while len(queue)>0 and found == False:
+            node = queue.pop(0)
+            for node2 in node.residual_graph_neighbours.keys():
+                if node2 not in visited:
+                    if node.residual_graph_neighbours[node2] >= 0:
+                        node2.predecessor = node
+                        if node2 == end_node:
+                            found = True
+                            backtrack_node = node2
+                            while not backtrack_node == start_node:
+                                result.append(backtrack_node)
+                                backtrack_node = backtrack_node.predecessor
+                            result.append(backtrack_node)
+                        else:                           
+                            visited.append(node2)
+                            queue.append(node2)
+        templist = []
+        for node in result:
+            templist.append(node.name)
+        print start_node.name, end_node.name, templist
+        return result
                 
+    
 if __name__ == "__main__":
     Node1 = Node.Node("1")    
     Node2 = Node.Node("2")
@@ -93,18 +144,22 @@ if __name__ == "__main__":
     Node5 = Node.Node("5")
     Node6 = Node.Node("6")
     Node7 = Node.Node("7")
-    Node1.neighbours = [Node2, Node3, Node4]
-    Node2.neighbours = [Node1, Node5]
-    Node3.neighbours = [Node1, Node5]
-    Node4.neighbours = [Node1, Node6]
-    Node5.neighbours = [Node2, Node3, Node7]
-    Node6.neighbours = [Node4, Node7]
-    Node7.neighbours = [Node5, Node6]
+    Node8 = Node.Node("8")
+    Node9 = Node.Node("9")
+    Node1.neighbours = [Node2, Node3]
+    Node2.neighbours = [Node1, Node4, Node5]
+    Node3.neighbours = [Node1, Node6]
+    Node4.neighbours = [Node2, Node7]
+    Node5.neighbours = [Node2, Node8]
+    Node6.neighbours = [Node3, Node7]
+    Node7.neighbours = [Node4, Node6, Node9]
+    Node8.neighbours = [Node5, Node9]
+    Node9.neighbours = [Node7, Node8]
     
-    g = Graph(["Fisch"], [Node1, Node2, Node3, Node4, Node5, Node6, Node7], 0.8)
+    g = Graph(["Fisch"], [Node1, Node2, Node3, Node4, Node5, Node6, Node7, Node8, Node9], 0.8)
     g.calculatePageRank(g.d)
     g.calculateKPP()
     g.calculateBetweenness()
-    #for node in g.nodes:
-        #print node.kpp
+    g.calculateMaximumFlow()
+    
         
