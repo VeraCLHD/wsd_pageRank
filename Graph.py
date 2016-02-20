@@ -1,4 +1,5 @@
 import Node
+import Word
 
 class Graph(object):
     def __init__(self, words, nodes, d):
@@ -7,7 +8,7 @@ class Graph(object):
         self.d = d
    
                     
-    def calculatePageRank(self, d):   
+    def calculatePageRank(self, d): #fill the graph with sand and let it flow iteratively along edges until the amounts of sand at each node don't change anymore
         for node in self.nodes:
             node.previous_pr = 1.0/len(self.nodes) #initialize equal start weights which sum up to 1
         min_change_val = 0.01
@@ -29,7 +30,7 @@ class Graph(object):
                 node.previous_pr = node.page_rank
             
             
-    def calculateKPP(self): #key player problem, not normalized. the information for betweenness can be extracted almost identically, so the basic informations for betweenness are gathered in here, too. the lines where this happens are marked
+    def calculateKPP(self): #key player problem, not normalized. for each node, sum up inversed distances to each other node. the information for betweenness can be extracted almost identically, so the basic informations for betweenness are gathered in here, too. the lines where this happens are marked
         for node in self.nodes: #create a bft for each node
             kpp_value = 0.0
             node_list = self.nodes[:] #this is used to check if we have seen a node before
@@ -57,8 +58,11 @@ class Graph(object):
                 queue = neighbours_list
             node.kpp = kpp_value
             
-                            
-    def calculateBetweenness(self): #not normalized
+    def calculateInDegree(self):
+        for node in self.nodes:
+            node.initializeInDegree()
+       
+    def calculateBetweenness(self): #not normalized. for a node n: for each pair of nodes a,b find out what percentage of the shortest paths from a to b go through n
         node_zero = self.nodes[1]
         for node in self.nodes: #find all shortest paths from node to node
             for key in node.tree_dictionary.keys():
@@ -79,36 +83,31 @@ class Graph(object):
                     queue = visited
                     visited = []
                 
-    def calculateMaximumFlow(self):
+    def calculateMaximumFlow(self): #for all node1,node2 in the nodesXnodes diagonal create a residual graph and find all ways from node1 to node2
         for node in self.nodes:
-            node.initialize_residual_graph()
+            node.initializeResidualGraph()
         self.temp_nodes = self.nodes[:]
         while len(self.temp_nodes)>0:
             node1 = self.temp_nodes.pop()
             nodes2 = self.temp_nodes[:]
             for node2 in nodes2:
-                #print node1.name, node2.name
                 found_path = True
                 while found_path == True:
                     result_list = self.createResidualGraph(node1, node2)
-                    #result_list = output of this function: make a breadt first search on the graph and return a shortest path from node to node2
                     if len(result_list) == 0:
                         found_path = False
                     else:
                         for node_iter in range(len(result_list)-1):
                             node3 = result_list[node_iter]
                             node4 = result_list[node_iter+1]
-                            #print node3.name, node4.name
                             node3.residual_graph_neighbours[node4] +=1
                             node4.residual_graph_neighbours[node3] -=1
                         node1.residual_value +=1
                         node2.residual_value +=1
                 for nodey in self.nodes: #reset all resdiual values for the next round
-                    nodey.reset_residual_values()
-        for node in self.nodes:
-            print node.name, node.residual_value
+                    nodey.resetResidualValues()
             
-    def createResidualGraph(self, start_node, end_node):
+    def createResidualGraph(self, start_node, end_node): #create a residual graph and find paths until no further path can be found. used for calculateMaximumFlow
         queue = [start_node]
         visited = [start_node]
         result = []
@@ -129,14 +128,33 @@ class Graph(object):
                         else:                           
                             visited.append(node2)
                             queue.append(node2)
-        templist = []
-        for node in result:
-            templist.append(node.name)
-        print start_node.name, end_node.name, templist
         return result
-                
+        
+    def getResults(self, usedMeasure): #PR, KPP, iD, BWN, MF
+        result_list = []
+        for word in self.words:
+            maximum = [None, 0]
+            for node in word.synsets:
+                value = None
+                if usedMeasure == "PR":
+                    value = node.page_rank
+                if usedMeasure == "KPP":
+                    value = node.kpp
+                if usedMeasure == "iD":
+                    value = node.in_degree                   
+                if usedMeasure == "BWN":
+                    value = node.betweenness
+                if usedMeasure == "MF":
+                    value = node.residual_value
+                if value > maximum[1]:
+                    maximum = [node, value]
+            result_list.append([word.name, maximum[0].name])
+        return result_list
     
 if __name__ == "__main__":
+    Word1 = Word.Word("I")
+    Word2 = Word.Word("like")
+    Word3 = Word.Word("cats")
     Node1 = Node.Node("1")    
     Node2 = Node.Node("2")
     Node3 = Node.Node("3")
@@ -144,22 +162,32 @@ if __name__ == "__main__":
     Node5 = Node.Node("5")
     Node6 = Node.Node("6")
     Node7 = Node.Node("7")
-    Node8 = Node.Node("8")
-    Node9 = Node.Node("9")
-    Node1.neighbours = [Node2, Node3]
-    Node2.neighbours = [Node1, Node4, Node5]
-    Node3.neighbours = [Node1, Node6]
-    Node4.neighbours = [Node2, Node7]
-    Node5.neighbours = [Node2, Node8]
-    Node6.neighbours = [Node3, Node7]
-    Node7.neighbours = [Node4, Node6, Node9]
-    Node8.neighbours = [Node5, Node9]
-    Node9.neighbours = [Node7, Node8]
+    Node1.neighbours = [Node2, Node3, Node4]
+    Node2.neighbours = [Node1, Node5]
+    Node3.neighbours = [Node1, Node5]
+    Node4.neighbours = [Node1, Node6]
+    Node5.neighbours = [Node2, Node3, Node7]
+    Node6.neighbours = [Node4, Node7]
+    Node7.neighbours = [Node5, Node6]
+    Word1.synsets = [Node1, Node4, Node7]
+    Word2.synsets = [Node2, Node5]
+    Word3.synsets = [Node3, Node6]
     
-    g = Graph(["Fisch"], [Node1, Node2, Node3, Node4, Node5, Node6, Node7, Node8, Node9], 0.8)
+    
+    g = Graph([Word1, Word2, Word3], [Node1, Node2, Node3, Node4, Node5, Node6, Node7], 0.8)
     g.calculatePageRank(g.d)
     g.calculateKPP()
+    g.calculateInDegree()
     g.calculateBetweenness()
     g.calculateMaximumFlow()
-    
+    print "pageRank:"
+    print g.getResults("PR")   
+    print "key player:"
+    print g.getResults("KPP")
+    print "in-Degree:"
+    print g.getResults("iD")
+    print "Betweenness:"
+    print g.getResults("BWN")
+    print "Maximum Flow:"
+    print g.getResults("MF")
         

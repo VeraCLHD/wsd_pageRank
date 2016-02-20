@@ -5,7 +5,7 @@ class Node(object):
         self.neighbours = []        
         
         #measures
-        self.in_degree = len(self.neighbours)
+        self.in_degree = 0
         self.page_rank = 0
         self.kpp = 0
         self.betweenness = 0
@@ -20,14 +20,15 @@ class Node(object):
         self.predecessor = None #needed for bfs for maximum flow
         
         
+    def initializeInDegree(self):
+        self.in_degree = len(self.neighbours)
         
-        
-    def initialize_residual_graph(self): #must be done after the graph is created
+    def initializeResidualGraph(self): #must be done after the graph is created
         for neighbour in self.neighbours:
             self.residual_graph_neighbours[neighbour] = 0 #0 means no flow yet. 1 and -1 mean flow on some direction
         
     
-    def reset_residual_values(self):
+    def resetResidualValues(self):
         for key in self.residual_graph_neighbours.keys():
             self.residual_graph_neighbours[key] = 0
             
