@@ -8,6 +8,7 @@ class Word:
 			self.name = word.replace(" ", "_")
 		else:
 			self.name = word
+		
 		self.synsets = set()
 		# if the word has no synsets or isn't found in WordNet at all, this flag is set to True
 		self.deadWord = False
