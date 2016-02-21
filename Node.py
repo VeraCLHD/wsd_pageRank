@@ -34,8 +34,15 @@ class Node(object):
     def resetResidualValues(self):
         for key in self.residual_graph_neighbours.keys():
             self.residual_graph_neighbours[key] = 0
-            
-        
+    
+    def getNeighbours(self):
+	    return self.neighbours
+    def setNeighbours(self, neighbours):
+		self.neighbours = neighbours
+    def getName(self):
+	    return self.name
+    def setName(self, name):
+	    self.name = name
     
     
     
