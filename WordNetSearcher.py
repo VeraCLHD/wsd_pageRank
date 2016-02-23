@@ -75,7 +75,7 @@ class WordNetSearcher(object):
 	def findAllSemanticRelationsForSynset(lineAsString):
 		synset = lineAsString[0:8]
 		#find all 8 digit numbers in the line that are not the synset itself
-		semRelations = set([m.strip() for m in re.findall("\s[0-9]{8}\s".strip(), lineAsString) if m != synset])
+		semRelations = set([m.strip() for m in re.findall("[0-9]{8}", lineAsString) if m != synset])
 		dict = WordNetSearcher.getDataDictionary()
 		if synset in dict:
 			dict[synset].update(semRelations)
@@ -164,7 +164,28 @@ class WordNetSearcher(object):
 								# neighbour_node.neighbours = WordNetSearcher.dataDictionary[neighbour]
 								# q.append(neighbour_node)
 					
-					
+
+def createTree(self, wurzel):
+    queue = [wurzel]
+    this_iteration = []
+    results = [wurzel]
+    iterator = 0
+    while iterator < 3:
+        iterator += 1
+        for node in queue:
+            for neighbour in WordNetSearcher.dataDictionary[node.name]:
+                if not neighbour in results:
+                    results.append(neighbour)
+                    this_iteration.append(neighbour)
+                    neighbour.tree_dictionary[wurzel] = [[node], iterator]
+                else:
+                    if neighbour.tree_dictionary[wurzel][1] == iterator: #diese vier zeilen braucht man um ggf das tree_dictionary um node zu erweitern
+                        temp = neighbour.tree_dictionary[wurzel]
+                        temp[0].append[node]
+                        neighbour.tree_dictionary[wurzel] = temp
+        queue = this_iteration
+        this_iteration = []		
+        
 
 	def createTreesDN(self, depth):
 		# should create a tree for each synset
