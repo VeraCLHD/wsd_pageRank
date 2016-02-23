@@ -5,8 +5,12 @@ class OntoNodesSentenceExtractor:
         
     
     def getNextSentence(self):
-        #extract next sentence from ontoNotes
-        #output: [[word1, wordNet_sense1], [word2, wordNet_sense2], ...]
+        #extract next sentence from ontoNotes        
+        #stopWords rauswerfen
+        #output: [[word1, [wordNet_sense1]], [word2, [wordNet_sense2]], ...]
+        #words sind hier einfach strings, keine objekte der klasse Word
+        #bei fehlenden bedeutungen ist die ausgegebene bedeutung ein leerer string
+        
         
     def sentenceToWords(self, sentence):
         #input: sentence wie aus get_next_sentence

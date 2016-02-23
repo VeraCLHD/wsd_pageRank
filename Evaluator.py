@@ -72,7 +72,7 @@ class Evaluator:
         self.micro_recall = float(self.true_positives)/(self.true_positives+self.false_negatives)
         self.micro_f_measure = 2*float(self.precision*self.recall)/(self.precision+self.recall)
         
-        finals = [self.accuracy, self.micro_precision, self.micro_recall, self.micro_f_measure]
-        print "Results in order: Accuracy, Precision, Recall, F-Measure"
+        finals = [self.accuracy, self.micro_precision, self.micro_recall, self.micro_f_measure, self.non_recognized]
+        print "Results in order: Accuracy, Precision, Recall, F-Measure, Non-recognized"
         for measure in finals:
             print measure
