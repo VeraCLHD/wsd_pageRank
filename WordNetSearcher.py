@@ -93,26 +93,6 @@ class WordNetSearcher(object):
 			word.setDeadWord(True)
 			sys.stderr.write("This word is empty or was not found in WordNet 2.1")
 	
-	def createInitialTreeDraft(self):
-		# should create a tree for each synset
-		nodes = []
-		for word in self.inputWords:
-			wordString = word.getName()
-			if not word.deadWord:
-				wordNode = Node(wordString)
-				self.getMeaningsForWord(word)
-				synsetsForWord = word.getSynsets()
-				for synset in synsetsForWord:
-					semanticRelations = WordNetSearcher.dataDictionary[synset]
-					# in class node, neighbours should be a set
-					wordNode.getNeighbours().extend(semanticRelations)
-				nodes.append(wordNode)
-			if nodes:
-				return Graph(self.inputWords, nodes, 0.85)
-			else:
-				std.err.write("This sentence cointains only dead words. No graph could be created")
-				self.deadSentence = True
-	
 	def createTree(self, wurzel):
 		queue = [wurzel]
 		this_iteration = []
@@ -203,10 +183,10 @@ class WordNetSearcher(object):
 			graph = Graph(self.inputWords, list(relevant_nodes), 0.85)	
 			return graph
 					
-		def checkTreesAssignmentToWord(self, tree_1_root, tree_2_root):
-			for word in self.inputWords:
-				#if it returns true, then the synsets are from the same word
-				return (tree_1_root in word.synsets and tree_2_root in word.synsets)
+	def checkTreesAssignmentToWord(self, tree_1_root, tree_2_root):
+		for word in self.inputWords:
+			#if it returns true, then the synsets are from the same word
+			return (tree_1_root in word.synsets and tree_2_root in word.synsets)
 					
 				
 			
