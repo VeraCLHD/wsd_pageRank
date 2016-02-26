@@ -21,7 +21,7 @@ class WordNetSearcher(object):
 	def __init__(self, inputWords):
 		self.inputWords = inputWords
 		self.synsets = set()
-		self.trees = []
+		self.raw_trees = []
 		self.deadSentence = False
 	
 	def getSynsets(self):
@@ -112,6 +112,33 @@ class WordNetSearcher(object):
 			else:
 				std.err.write("This sentence cointains only dead words. No graph could be created")
 				self.deadSentence = True
+	
+	def createTree(self, wurzel):
+		queue = [wurzel]
+		this_iteration = []
+		results = [wurzel]
+		iterator = 0
+		while iterator < 3:
+			iterator += 1
+			for node in queue:
+				for neighbour in WordNetSearcher.dataDictionary[node.name]:
+					
+					neighbour_node = Node(neighbour)
+					neighbour_node.neighbours = WordNetSearcher.dataDictionary[neighbour]
+					
+					if not neighbour_node in results:
+						results.append(neighbour_node)
+						this_iteration.append(neighbour_node)
+						neighbour_node.tree_dictionary[wurzel] = [[node], iterator]
+					else:
+						if neighbour_node.tree_dictionary[wurzel][1] == iterator: #diese vier zeilen braucht man um ggf das tree_dictionary um node zu erweitern
+							temp = neighbour_node.tree_dictionary[wurzel]
+							temp[0].append[node]
+							neighbour_node.tree_dictionary[wurzel] = temp
+			queue = this_iteration
+			this_iteration = []
+		self.raw_trees.append(Tree(results))
+		
 				
 	def createTrees(self):
 		print "CREATING SUBTREES..."
@@ -123,128 +150,67 @@ class WordNetSearcher(object):
 				self.getMeaningsForWord(word)
 				synsetsForWord = word.getSynsets()
 				for synset in synsetsForWord:
-					synset_tree = Tree([])
 					root_synset = Node(synset)
 					root_synset.neighbours = WordNetSearcher.dataDictionary[synset]
-					
-					visited = [] # contains the node names
-					q = deque()
-					q.append(root_synset)
-					
-					while len(q) > 0:
-						current_node = q.popleft()
-						if current_node.name not in visited:
-							visited.append(current_node.name)
-							synset_tree.nodes.append(current_node) # besuchen = speichern
-							
-							list = []
-							for neighbour in current_node.neighbours:
-								list.append(neighbour_node.name)
-								if neighbour !=current_node.name:
-									neighbour_node = Node(neighbour)
-									neighbour_node.neighbours = WordNetSearcher.dataDictionary[neighbour]
-									q.append(neighbour_node)
-								
-					# root_synset = Node(synset)
-					# root_synset.neighbours = WordNetSearcher.dataDictionary[synset]
-					
-					# visited = [] # contains the node names
-					# q = deque()
-					# q.append(root_synset)
-					
-					# while len(q) > 0:
-						# current_node = q.popleft()
-						# if current_node.name not in visited:
-							# visited.append(current_node.name)
-							# synset_tree.nodes.append(current_node) # besuchen = speichern
-							
-							# for neighbour in current_node.neighbours:
-								# #if neighbour !=current_node.name:
-								# neighbour_node = Node(neighbour)
-								# neighbour_node.neighbours = WordNetSearcher.dataDictionary[neighbour]
-								# q.append(neighbour_node)
-					
-
-def createTree(self, wurzel):
-    queue = [wurzel]
-    this_iteration = []
-    results = [wurzel]
-    iterator = 0
-    while iterator < 3:
-        iterator += 1
-        for node in queue:
-            for neighbour in WordNetSearcher.dataDictionary[node.name]:
-                if not neighbour in results:
-                    results.append(neighbour)
-                    this_iteration.append(neighbour)
-                    neighbour.tree_dictionary[wurzel] = [[node], iterator]
-                else:
-                    if neighbour.tree_dictionary[wurzel][1] == iterator: #diese vier zeilen braucht man um ggf das tree_dictionary um node zu erweitern
-                        temp = neighbour.tree_dictionary[wurzel]
-                        temp[0].append[node]
-                        neighbour.tree_dictionary[wurzel] = temp
-        queue = this_iteration
-        this_iteration = []		
-        
-
-	def createTreesDN(self, depth):
-		# should create a tree for each synset
-		#nodes = []
-		for word in self.inputWords:
-			wordString = word.getName()
-			if not word.deadWord:
-				self.getMeaningsForWord(word)
-				synsetsForWord = word.getSynsets()
-				for synset in synsetsForWord:
-					synset_tree = Tree([])
-					root_synset = Node(synset)
-					root_synset.neighbours = WordNetSearcher.dataDictionary[synset]
-					
-					elementsToDepthIncrease = len(root_synset.neighbours)
-					count_elToDepthIncrease = 0
-					
-					visited = [] # contains the node names
-					q = deque()
-					q.append(root_synset)
-					while len(q) >0:
-						print "COUNTER: " + str(count_elToDepthIncrease)
-						print "ELDEPTH INCR: " + str(elementsToDepthIncrease)
-						print "DEPTH: " +  str(currentDepth)
-						
-						if currentDepth > depth:
-							break
-						if count_elToDepthIncrease == elementsToDepthIncrease:
-							currentDepth +=1
-							count_elToDepthIncrease = 0
-						
-						current_node = q.popleft()
-						count_elToDepthIncrease +=1
-						print "NODE:" + current_node.name
-						
-						if current_node.name not in visited:
-							visited.append(current_node.name)
-							synset_tree.nodes.append(current_node) # besuchen = speichern
-							
-							for neighbour in current_node.neighbours:
-								neighbour_node = Node(neighbour)
-								neighbour_node.neighbours = WordNetSearcher.dataDictionary[synset]
-								elementsToDepthIncrease = len(neighbour_node.neighbours)
-								q.append(neighbour_node)
-						
+					self.createTree(root_synset)
 	
-	def breadthFirstSearch(self, graph, startnode):
-		nodes = graph.nodes
-		visited = [False]*len(nodes)   # Flags, welche Knoten bereits besucht wurden
-		q = deque()                    # Queue fur die zu besuchenden Knoten
-		q.append(startnode)            # Startknoten in die Queue einf
-		while len(q) > 0:              # Solange es noch unbesuchte Knoten gibt
-			node = q.popleft()         # Knoten aus der Queue nehmen (first in - first out)
-			if not visited[node]:      # Falls node noch nicht (auf einem anderen Weg) besucht wurde
-				visited[node] = True  # Markiere node als besucht
-				print node            # Drucke Knotennummer
-				for neighbor in graph[node]:    # f Nachbarn in die Queue ein
-					q.append(neighbor)
-	
+	def constructGraph(self):
+		# if no trees were constructed because of dead words
+		if len(self.raw_trees) == 0:
+			return Graph(self.inputWords, [], 0.85)
+		# if only one tree is constructed, then this is our graph
+		elif len(self.raw_trees) == 1:
+			return Graph(self.inputWords, self.raw_trees[0].nodes, 0.85)
+		else:
+			relevant_nodes = set()
+			no_common_nodes = True
+			#raw trees are the subtrees extracted with breadth first search
+			for i in range(0,len(self.raw_trees)):
+				tree_1 = self.raw_trees[i]
+				for k in range(i, len(self.raw_trees)):
+					tree_2 = self.raw_trees[k]
+					# no comparison of tree with itself
+					if tree_1 != tree_2:
+						for node in tree_1.nodes:
+							if node in tree_2.nodes:
+								no_common_nodes = False
+								tree_1_root = tree_1.nodes[0]
+								tree_2_root = tree_2.nodes[0]
+								# only if the two synsets aren't from the same word
+								if self.checkTreesAssignmentToWord(tree_1_root, tree_2_root) == False:
+									# process node from tree 2
+									for relevant_node in node.tree_dictionary.keys():
+										#saved the common node and its root from tree_2
+										relevant_nodes.update(relevant_node)
+										#saved the common node's immediate neighbour from tree_2
+										relevant_nodes.update(node.tree_dictionary[tree_2_root][0])
+										
+										# how do we save the whole paths: so far only node itself, root and 1 neighbour of node?
+										
+									#same node is also in tree 1
+									node_1 = tree_1[tree_1.index(node)]
+									for relevant_node_1 in node_1.tree_dictionary.keys():
+										#saved the common node and its root from tree_2
+										relevant_nodes.update(relevant_node_1)
+										#saved the common node's immediate neighbour from tree_2
+										relevant_nodes.update(node_1.tree_dictionary[tree_1_root][0])
+										
+										# how do we save the whole paths: so far only node itself, root and 1 neighbour of node?
+			
+			if no_common_nodes == True:
+				for tree in self.raw_trees:
+					relevant_nodes.update(tree.nodes)
+			graph = Graph(self.inputWords, list(relevant_nodes), 0.85)	
+			return graph
+					
+		def checkTreesAssignmentToWord(self, tree_1_root, tree_2_root):
+			for word in self.inputWords:
+				#if it returns true, then the synsets are from the same word
+				return (tree_1_root in word.synsets and tree_2_root in word.synsets)
+					
+				
+			
+		
 
 if __name__ == "__main__":
 	#mock of word objects as input
@@ -257,6 +223,11 @@ if __name__ == "__main__":
 	WordNetSearcher.readIndexFiles()
 	WordNetSearcher.readDataFiles()
 	wordsearcher.createTrees()
+	graph = wordsearcher.constructGraph()
+	for node in graph.nodes:
+		print node.name
+		#for node in tree.nodes:
+		#	print node.name
 	#for synset in WordNetSearcher.indexDictionary[word3.name]:
 	#	print "SYNSET: " + synset
 	#	print WordNetSearcher.dataDictionary[synset]

@@ -1,0 +1,51 @@
+Vera@Coli-2015 /cygdrive/e/Programms_Coli/Cygwin/home/Vera/Semantik/Project
+$ python WordNetSearcher.py
+CREATING SUBTREES...
+{<Node.Node object at 0x6ffffe08550>: [[], 0]}
+{<Node.Node object at 0x6ffffe08610>: [[], 0], <Node.Node object at 0x6ffffe08550>: [[<Node.Node object at 0x6ffffe08550>], 1]}
+{<Node.Node object at 0x6ffffe086d0>: [[], 0], <Node.Node object at 0x6ffffe08550>: [[<Node.Node object at 0x6ffffe08610>], 2]}
+{<Node.Node object at 0x6ffffe08690>: [[], 0], <Node.Node object at 0x6ffffe08550>: [[<Node.Node object at 0x6ffffe08610>], 2]}
+{<Node.Node object at 0x6ffffe08710>: [[], 0], <Node.Node object at 0x6ffffe08550>: [[<Node.Node object at 0x6ffffe08610>], 2]}
+{<Node.Node object at 0x6ffffe08750>: [[], 0], <Node.Node object at 0x6ffffe08550>: [[<Node.Node object at 0x6ffffe086d0>], 3]}
+{<Node.Node object at 0x6ffffe08790>: [[], 0], <Node.Node object at 0x6ffffe08550>: [[<Node.Node object at 0x6ffffe08690>], 3]}
+{<Node.Node object at 0x6ffffe087d0>: [[], 0], <Node.Node object at 0x6ffffe08550>: [[<Node.Node object at 0x6ffffe08690>], 3]}
+{<Node.Node object at 0x6ffffe08810>: [[], 0], <Node.Node object at 0x6ffffe08550>: [[<Node.Node object at 0x6ffffe08710>], 3]}
+
+Vera@Coli-2015 /cygdrive/e/Programms_Coli/Cygwin/home/Vera/Semantik/Project
+$ python WordNetSearcher.py
+CREATING SUBTREES...
+NODE: 10743018
+Traceback (most recent call last):
+  File "WordNetSearcher.py", line 184, in <module>
+    print "KEY: " + key
+TypeError: cannot concatenate 'str' and 'Node' objects
+
+Vera@Coli-2015 /cygdrive/e/Programms_Coli/Cygwin/home/Vera/Semantik/Project
+$ python WordNetSearcher.py
+CREATING SUBTREES...
+NODE: 10743018
+KEY: 10743018
+NODE: 09722626
+KEY: 09722626
+KEY: 10743018
+NODE: 09710224
+KEY: 09710224
+KEY: 10743018
+NODE: 09710843
+KEY: 09710843
+KEY: 10743018
+NODE: 09723059
+KEY: 09723059
+KEY: 10743018
+NODE: 10402286
+KEY: 10402286
+KEY: 10743018
+NODE: 10272430
+KEY: 10272430
+KEY: 10743018
+NODE: 06017642
+KEY: 06017642
+KEY: 10743018
+NODE: 10509929
+KEY: 10509929
+KEY: 10743018
