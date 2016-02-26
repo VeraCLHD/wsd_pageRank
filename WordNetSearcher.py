@@ -19,7 +19,9 @@ class WordNetSearcher(object):
 	dataDictionary = {}
 	#input: list of word objects
 	def __init__(self, inputWords):
-		self.inputWords = inputWords
+		self.inputWords = []
+		for word in inputWords:
+			self.inputWords.append(Word(word))
 		self.synsets = set()
 		self.raw_trees = []
 		self.deadSentence = False
