@@ -198,7 +198,7 @@ if __name__ == "__main__":
 	#mock of word objects as input
 	#word1 = Word("athletic_game")
 	#word2 = Word("cat")
-	word3 = Word("cohn")
+	word3 = "cohn"
 	listOfAnimals = [word3] # reference to object
 	wordsearcher = WordNetSearcher(listOfAnimals)
 	
