@@ -1,3 +1,4 @@
+import sys
 class Node(object):
     def __init__(self, name):
         #basic attributes
@@ -6,7 +7,7 @@ class Node(object):
         else:
             sys.stderr.write('illegal type for name. Has to be str')
         self.neighbours = []        
-        
+        self.sub_tree = None
         #measures
         self.in_degree = 0
         self.page_rank = 0

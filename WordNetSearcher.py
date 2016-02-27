@@ -25,15 +25,7 @@ class WordNetSearcher(object):
 		self.synsets = set()
 		self.raw_trees = []
 		self.deadSentence = False
-	
-	def getSynsets(self):
-		return self.synsets
-	def setSynsets(self, meanings):
-		self.synsets = meanings
-	def getWords(self):
-		return self.inputWords
-	def setWords(self, inputWords):
-		self.inputWords = inputWords
+
 	
 	@staticmethod
 	def getIndexDictionary():
@@ -89,8 +81,9 @@ class WordNetSearcher(object):
 		lemma = word.getName()
 		dict = WordNetSearcher.getIndexDictionary()
 		if lemma and lemma in dict:
-			word.getSynsets().update(dict[lemma])
-			self.getSynsets().update(dict[lemma])
+			for synsetString in dict[lemma]:
+				word.synsets.update([Node(synsetString)])
+			self.synsets.update(dict[lemma])
 		else:
 			word.setDeadWord(True)
 			sys.stderr.write("This word is empty or was not found in WordNet 2.1")
@@ -119,7 +112,8 @@ class WordNetSearcher(object):
 							neighbour_node.tree_dictionary[wurzel] = temp
 			queue = this_iteration
 			this_iteration = []
-		self.raw_trees.append(Tree(results))
+		subtree = Tree(results)
+		self.raw_trees.append(subtree)
 		
 				
 	def createTrees(self):
@@ -132,8 +126,8 @@ class WordNetSearcher(object):
 				self.getMeaningsForWord(word)
 				synsetsForWord = word.getSynsets()
 				for synset in synsetsForWord:
-					root_synset = Node(synset)
-					root_synset.neighbours = WordNetSearcher.dataDictionary[synset]
+					root_synset = Node(synset.name)
+					root_synset.neighbours = WordNetSearcher.dataDictionary[synset.name]
 					self.createTree(root_synset)
 	
 	# def constructGraph(self):
@@ -205,13 +199,8 @@ class WordNetSearcher(object):
 	
 	def constructGraph2(self, d):
 		# if no trees were constructed because of dead words
-		if len(self.raw_trees) == 0:
+		if len(self.raw_trees) <= 1:
 			return Graph(self.inputWords, [], d)
-		# if only one tree is constructed, then this is our graph
-		elif len(self.raw_trees) == 1:
-			setOfNodes = set(self.raw_trees[0].nodes)
-			listOfNodes = list(setOfNodes)
-			return Graph(self.inputWords, listOfNodes, d)
 		else:
 			relevant_nodes = set()
 			no_common_nodes = True
@@ -228,7 +217,7 @@ class WordNetSearcher(object):
 							min_distance = 6 # at the beginning, this is the maximum distance
 							chosen_candidate = []
 							for node in tree_1.nodes:
-								if node.name in currentWord.synsets and node.name in self.inputWords[other_w_index]:
+								if node in currentWord.synsets and node in self.inputWords[other_w_index]:
 									if node in tree_2.nodes:
 										no_common_nodes = False
 										tree_1_root = tree_1.nodes[0]
@@ -269,13 +258,82 @@ class WordNetSearcher(object):
 					relevant_nodes.update(tree.nodes)
 			graph = Graph(self.inputWords, list(relevant_nodes), d)	
 			return graph
+	
+	def constructGraph3(self, d):
+		# if no trees were constructed because of dead words
+		if len(self.raw_trees) <= 1:
+			return Graph(self.inputWords, [], d)
+		else:
+			relevant_nodes = set()
+			no_common_nodes = True
+			
+			for i in range(len(self.inputWords)):
+				currentWord = self.inputWords[word_index]
+				for j in range(i+1, len(self.inputWords)):
+					for node in self.inputWords[i].synsets:
+						for node2 in self.inputWords[j].synsets:
+							if node != node2:
+								for subTreeNode in node.sub_tree.nodes:
+									if node2 in subTreeNode.tree_dictionary.keys():
+										no_common_nodes = False
+									#tree_1_root = tree_1.nodes[0]
+									#tree_2_root = tree_2.nodes[0]
+										
+										distanceToRoot12 = node2.tree_dictionary[tree_1_root][1] + node_2.tree_dictionary[tree_2_root][1]
+										if distanceToRoot12 <= min_distance:
+											chosen_candidate[0] = node
+											min_distance = distanceToRoot12
+							node = chosen_canditate[0]
+							# process node from tree 1
+							for relevant_node in node.tree_dictionary.keys():
+								#saved the common node and its root from tree_2
+								relevant_nodes.update(relevant_node)
+								length = node.tree_dictionary[tree_1_root][1] # path length
+								
+								if length == 2:
+									path_to_root_node = node.tree_dictionary[tree_1_root][0][0]
+									relevant_nodes.update(path_to_root_node)
+								elif length == 3:
+									path_to_root_node = node.tree_dictionary[tree_1_root][0][0]
+									relevant_nodes.update(path_to_root_node)
+									path_to_root_node_2 = path_to_root_node.tree_dictionary[tree_1_root][0][0]
+									relevant_nodes.update(path_to_root_node_2)
+								
+								length_2 = node.tree_dictionary[tree_2_root][1] # path length
+								if length_2 == 2:
+									path_to_root_node_21 = node.tree_dictionary[tree_2_root][0][0]
+									relevant_nodes.update(path_to_root_node_21)
+								elif length_2 == 3:
+									path_to_root_node_21 = node.tree_dictionary[tree_2_root][0][0]
+									relevant_nodes.update(path_to_root_node_21)
+									path_to_root_node_3 = path_to_root_node_21.tree_dictionary[tree_2_root][0][0]
+									relevant_nodes.update(path_to_root_node_3)
+					
+					#raw trees are the subtrees extracted with breadth first search
+					for i in range(len(self.raw_trees)):
+						tree_1 = self.raw_trees[i]
+						for k in range(i+1, len(self.raw_trees)):
+							tree_2 = self.raw_trees[k]
+							# no comparison of tree with itself
+							min_distance = 6 # at the beginning, this is the maximum distance
+							chosen_candidate = []
+							for node in tree_1.nodes:
+								if node.name in currentWord.synsets and node.name in self.inputWords[other_w_index]:
+									if node in tree_2.nodes:
+										
+				
+			if no_common_nodes == True:
+				for tree in self.raw_trees:
+					relevant_nodes.update(tree.nodes)
+			graph = Graph(self.inputWords, list(relevant_nodes), d)	
+			return graph
 					
 
 if __name__ == "__main__":
 	#mock of word objects as input
 	#word1 = Word("athletic_game")
 	#word2 = Word("cat")
-	word3 = "kin"
+	word3 = "cohn"
 	listOfAnimals = [word3] # reference to object
 	wordsearcher = WordNetSearcher(listOfAnimals)
 	
