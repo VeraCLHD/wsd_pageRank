@@ -222,54 +222,53 @@ class WordNetSearcher(object):
 					#raw trees are the subtrees extracted with breadth first search
 					for i in range(len(self.raw_trees)):
 						tree_1 = self.raw_trees[i]
-						for k in range(i, len(self.raw_trees)):
+						for k in range(i+1, len(self.raw_trees)):
 							tree_2 = self.raw_trees[k]
 							# no comparison of tree with itself
-							if tree_1 != tree_2:
-								min_distance = 6 # at the beginning, this is the maximum distance
-								chosen_candidates = []
-								for node in tree_1.nodes:
-									if node.name in currentWord.synsets and node.name in self.inputWords[other_w_index]:
-										if node in tree_2.nodes:
-											no_common_nodes = False
-											tree_1_root = tree_1.nodes[0]
-											tree_2_root = tree_2.nodes[0]
-											
-											node_2 = tree_2[tree_2.index(node)]
-											distanceToRoot12 = node.tree_dictionary[tree_1_root][1] + node_2.tree_dictionary[tree_2_root][1]
-											if distanceToRoot12 <= min_distance:
-												chosen_candidates[0] = node
-												chosen_candidates[1] = node_2
-											
-								node = chosen_canditates[0]
-								node_2 = chosen_candidates[1]
-								# process node from tree 1
-								for relevant_node in node.tree_dictionary.keys():
-									#saved the common node and its root from tree_2
-									relevant_nodes.update(relevant_node)
-									length = node.tree_dictionary[tree_1_root][1] # path length
-									if length == 2:
-										path_to_root_node = node.tree_dictionary[tree_1_root][0][0]
-										relevant_nodes.update(path_to_root_node)
-									elif length == 3:
-										path_to_root_node = node.tree_dictionary[tree_1_root][0][0]
-										relevant_nodes.update(path_to_root_node)
-										path_to_root_node_2 = path_to_root_node.tree_dictionary[tree_1_root][0][0]
-										relevant_nodes.update(path_to_root_node_2)
-									
-								#same node is also in tree 2
+							min_distance = 6 # at the beginning, this is the maximum distance
+							chosen_candidates = []
+							for node in tree_1.nodes:
+								if node.name in currentWord.synsets and node.name in self.inputWords[other_w_index]:
+									if node in tree_2.nodes:
+										no_common_nodes = False
+										tree_1_root = tree_1.nodes[0]
+										tree_2_root = tree_2.nodes[0]
+										
+										node_2 = tree_2[tree_2.index(node)]
+										distanceToRoot12 = node.tree_dictionary[tree_1_root][1] + node_2.tree_dictionary[tree_2_root][1]
+										if distanceToRoot12 <= min_distance:
+											chosen_candidates[0] = node
+											chosen_candidates[1] = node_2
+											min_distance = distanceToRoot12
+							node = chosen_canditates[0]
+							node_2 = chosen_candidates[1]
+							# process node from tree 1
+							for relevant_node in node.tree_dictionary.keys():
+								#saved the common node and its root from tree_2
+								relevant_nodes.update(relevant_node)
+								length = node.tree_dictionary[tree_1_root][1] # path length
+								if length == 2:
+									path_to_root_node = node.tree_dictionary[tree_1_root][0][0]
+									relevant_nodes.update(path_to_root_node)
+								elif length == 3:
+									path_to_root_node = node.tree_dictionary[tree_1_root][0][0]
+									relevant_nodes.update(path_to_root_node)
+									path_to_root_node_2 = path_to_root_node.tree_dictionary[tree_1_root][0][0]
+									relevant_nodes.update(path_to_root_node_2)
 								
-								for relevant_node_2 in node_2.tree_dictionary.keys():
-									relevant_nodes.update(relevant_node_2)
-									length_2 = node_2.tree_dictionary[tree_2_root][1] # path length
-									if length_2 == 2:
-										path_to_root_node_21 = node_2.tree_dictionary[tree_2_root][0][0]
-										relevant_nodes.update(path_to_root_node_21)
-									elif length_2 == 3:
-										path_to_root_node_21 = node_2.tree_dictionary[tree_2_root][0][0]
-										relevant_nodes.update(path_to_root_node_21)
-										path_to_root_node_3 = path_to_root_node_21.tree_dictionary[tree_2_root][0][0]
-										relevant_nodes.update(path_to_root_node_3)
+							#same node is also in tree 2
+							
+							for relevant_node_2 in node_2.tree_dictionary.keys():
+								relevant_nodes.update(relevant_node_2)
+								length_2 = node_2.tree_dictionary[tree_2_root][1] # path length
+								if length_2 == 2:
+									path_to_root_node_21 = node_2.tree_dictionary[tree_2_root][0][0]
+									relevant_nodes.update(path_to_root_node_21)
+								elif length_2 == 3:
+									path_to_root_node_21 = node_2.tree_dictionary[tree_2_root][0][0]
+									relevant_nodes.update(path_to_root_node_21)
+									path_to_root_node_3 = path_to_root_node_21.tree_dictionary[tree_2_root][0][0]
+									relevant_nodes.update(path_to_root_node_3)
 				
 			if no_common_nodes == True:
 				for tree in self.raw_trees:
