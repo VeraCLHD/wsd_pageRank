@@ -226,7 +226,7 @@ class WordNetSearcher(object):
 							tree_2 = self.raw_trees[k]
 							# no comparison of tree with itself
 							min_distance = 6 # at the beginning, this is the maximum distance
-							chosen_candidates = []
+							chosen_candidate = []
 							for node in tree_1.nodes:
 								if node.name in currentWord.synsets and node.name in self.inputWords[other_w_index]:
 									if node in tree_2.nodes:
@@ -234,19 +234,17 @@ class WordNetSearcher(object):
 										tree_1_root = tree_1.nodes[0]
 										tree_2_root = tree_2.nodes[0]
 										
-										node_2 = tree_2[tree_2.index(node)]
 										distanceToRoot12 = node.tree_dictionary[tree_1_root][1] + node_2.tree_dictionary[tree_2_root][1]
 										if distanceToRoot12 <= min_distance:
-											chosen_candidates[0] = node
-											chosen_candidates[1] = node_2
+											chosen_candidate[0] = node
 											min_distance = distanceToRoot12
-							node = chosen_canditates[0]
-							node_2 = chosen_candidates[1]
+							node = chosen_canditate[0]
 							# process node from tree 1
 							for relevant_node in node.tree_dictionary.keys():
 								#saved the common node and its root from tree_2
 								relevant_nodes.update(relevant_node)
 								length = node.tree_dictionary[tree_1_root][1] # path length
+								
 								if length == 2:
 									path_to_root_node = node.tree_dictionary[tree_1_root][0][0]
 									relevant_nodes.update(path_to_root_node)
@@ -256,16 +254,12 @@ class WordNetSearcher(object):
 									path_to_root_node_2 = path_to_root_node.tree_dictionary[tree_1_root][0][0]
 									relevant_nodes.update(path_to_root_node_2)
 								
-							#same node is also in tree 2
-							
-							for relevant_node_2 in node_2.tree_dictionary.keys():
-								relevant_nodes.update(relevant_node_2)
-								length_2 = node_2.tree_dictionary[tree_2_root][1] # path length
+								length_2 = node.tree_dictionary[tree_2_root][1] # path length
 								if length_2 == 2:
-									path_to_root_node_21 = node_2.tree_dictionary[tree_2_root][0][0]
+									path_to_root_node_21 = node.tree_dictionary[tree_2_root][0][0]
 									relevant_nodes.update(path_to_root_node_21)
 								elif length_2 == 3:
-									path_to_root_node_21 = node_2.tree_dictionary[tree_2_root][0][0]
+									path_to_root_node_21 = node.tree_dictionary[tree_2_root][0][0]
 									relevant_nodes.update(path_to_root_node_21)
 									path_to_root_node_3 = path_to_root_node_21.tree_dictionary[tree_2_root][0][0]
 									relevant_nodes.update(path_to_root_node_3)
