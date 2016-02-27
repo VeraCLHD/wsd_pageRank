@@ -202,13 +202,81 @@ class WordNetSearcher(object):
 		for word in self.inputWords:
 			#if it returns true, then the synsets are from the same word
 			return (tree_1_root in word.synsets and tree_2_root in word.synsets)
+	
+	def constructGraph2(self, d):
+		# if no trees were constructed because of dead words
+		if len(self.raw_trees) == 0:
+			return Graph(self.inputWords, [], d)
+		# if only one tree is constructed, then this is our graph
+		elif len(self.raw_trees) == 1:
+			setOfNodes = set(self.raw_trees[0].nodes)
+			listOfNodes = list(setOfNodes)
+			return Graph(self.inputWords, listOfNodes, d)
+		else:
+			relevant_nodes = set()
+			no_common_nodes = True
+			
+			for word_index in range(len(self.inputWords)): # ADDED
+				currentWord = self.inputWords[word_index]
+				for other_w_index in range(len(self.inputWords)):
+					if word_index == other_w_index:
+						continue
+					else:
+						#raw trees are the subtrees extracted with breadth first search
+						for i in range(len(self.raw_trees)):
+							tree_1 = self.raw_trees[i]
+							for k in range(i, len(self.raw_trees)):
+								tree_2 = self.raw_trees[k]
+								# no comparison of tree with itself
+								if tree_1 != tree_2:
+									for node in tree_1.nodes:
+										if node.name in currentWord.synsets and node.name in self.inputWords[other_w_index]: #ADDED
+											if node in tree_2.nodes:
+												no_common_nodes = False
+												tree_1_root = tree_1.nodes[0]
+												tree_2_root = tree_2.nodes[0]
+												# process node from tree 2
+												for relevant_node in node.tree_dictionary.keys():
+													#saved the common node and its root from tree_2
+													relevant_nodes.update(relevant_node)
+													relevant_nodes.update(tree_1_root)
+													length = node.tree_dictionary[tree_1_root][1] # path length
+													if length == 2:
+														path_to_root_node = node.tree_dictionary[tree_1_root][0]
+														relevant_nodes.update(path_to_root_node)
+													elif length == 3:
+														path_to_root_node = node.tree_dictionary[tree_1_root][0]
+														relevant_nodes.update(path_to_root_node)
+														path_to_root_node_2 = path_to_root_node.tree_dictionary[tree_1_root][0]
+														relevant_nodes.update(path_to_root_node_2)
+													
+												#same node is also in tree 2
+												node_2 = tree_2[tree_2.index(node)]
+												for relevant_node_2 in node_2.tree_dictionary.keys():
+													relevant_nodes.update(relevant_node_2)
+													relevant_nodes.update(tree_2_root)
+													length_2 = node_2.tree_dictionary[tree_2_root][1] # path length
+													if length_2 == 2:
+														path_to_root_node_21 = node_2.tree_dictionary[tree_2_root][0]
+														relevant_nodes.update(path_to_root_node_21)
+													elif length_2 == 3:
+														path_to_root_node_21 = node_2.tree_dictionary[tree_2_root][0]
+														relevant_nodes.update(path_to_root_node_21)
+														path_to_root_node_3 = path_to_root_node_21.tree_dictionary[tree_2_root][0]
+														relevant_nodes.update(path_to_root_node_3)
+				
+						if no_common_nodes == True:
+							for tree in self.raw_trees:
+								relevant_nodes.update(tree.nodes)
+						graph = Graph(self.inputWords, list(relevant_nodes), d)	
+						return graph
 					
 
 if __name__ == "__main__":
 	#mock of word objects as input
 	#word1 = Word("athletic_game")
 	#word2 = Word("cat")
-	word3 = "kin"
+	word3 = "cohn"
 	listOfAnimals = [word3] # reference to object
 	wordsearcher = WordNetSearcher(listOfAnimals)
 	
