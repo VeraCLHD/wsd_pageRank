@@ -30,6 +30,10 @@ class Reader():
 	def returnProcontent(self):
 		# List[Lemma]
 		return self.procontent
+		
+		
+		
+	# Actions
 	
 	# Read ALL the data from a file
 	def readFile(self):
@@ -44,7 +48,7 @@ class Reader():
 			# Kick the useless first entry
 			for a in range(1,len(self.rawcontent)):
 				# Kick useless empty lines
-				if self.rawcontent[a] != "":
+				if self.rawcontent[a] != "" and "#begin" not in self.rawcontent[a] and "#end" not in self.rawcontent[a]:
 					splitLine = self.rawcontent[a].split()
 					# Pick out the juicy bits
 					dummy_lemma = Lemma.Lemma(int(splitLine[1]), int(splitLine[2]), str(splitLine[3]), str(splitLine[4]), str(splitLine[6]), str(splitLine[8]))
@@ -64,8 +68,19 @@ class Reader():
 					# Putting juicy bits together
 					dummy_translation = Translation.Translation(str(splitLine[0]), str(splitLine[1]), dummy_list_of_senses)
 					self.procontent.append(dummy_translation)
-					
-				
+		if self.filetype == "FW":
+			# Kick the useless first 25 entries
+			for a in range(25,len(self.rawcontent)):
+				# Kick useless empty lines
+				if self.rawcontent[a] != "" and "//" not in self.rawcontent[a]:
+					# Check for multiple examples
+					splitLine = self.rawcontent[a].split(", ")
+					dummy_functionWords = []
+					# Take all examples
+					for b in range(len(splitLine)):
+						# Kick constructions of multiple words
+						if " " not in splitLine[b]:
+							self.procontent.append(splitLine[b])
 	
 	# >>>FOR TESTING ONLY<<<
 	def translateProcontent(self):
@@ -76,66 +91,94 @@ class Reader():
 			for a in range(len(self.procontent)):
 				print(self.procontent[a].returnTranslation())	
 
-if __name__ == "__main__":
+#if __name__ == "__main__":
 	
 	# WARNING		WARNING		WARNING
 	# WARNING	absolute path!	WARNING
 	# WARNING		WARNING		WARNING
 	
-	reader1 = Reader("D:/TEST/test.txt","ON")
-	reader2 = Reader("D:/TEST/index.adj","IN")
+	#reader1 = Reader("D:/TEST/reader_test.txt","ON")
+	#reader2 = Reader("D:/TEST/index.adj","IN")
+	#reader3 = Reader("D:/TEST/EnglishPrepositions.txt","FW")
 	
-#	print
-#	print "SETUP STARTS"
-#	print
-#	print "Location:"
-#	print(reader1.returnFilename())
-#	print "Type:"
-#	print(reader1.returnFiletype())
-#	print "(Emtpy) Rrw:"
-#	print(reader1.returnRawcontent())
-#	print "(Empty) pro:"
-#	print(reader1.returnProcontent())
-#	print
-#	print "READING STARTS"
-#	print
-#	reader1.readFile()
-#	print "New raw:"
-#	print(reader1.returnRawcontent())
-#	print
-#	print "PROCESSING STARTS"
-#	print
-#	reader1.processContent()
-#	print "New pro:"
-#	print(reader1.returnProcontent())
-#	print
-#	print "<Translating>"
-#	reader1.translateProcontent()
+	# print
+	# print "SETUP STARTS"
+	# print
+	# print "Location:"
+	# print(reader1.returnFilename())
+	# print "Type:"
+	# print(reader1.returnFiletype())
+	# print "(Emtpy) Raw:"
+	# print(reader1.returnRawcontent())
+	# print "(Empty) pro:"
+	# print(reader1.returnProcontent())
+	# print
+	# print "READING STARTS"
+	# print
+	# reader1.readFile()
+	# print "New raw:"
+	# print(reader1.returnRawcontent())
+	# print
+	# print "PROCESSING STARTS"
+	# print
+	# reader1.processContent()
+	# print "New pro:"
+	# print(reader1.returnProcontent())
+	# print
+	# print "<Translating>"
+	# reader1.translateProcontent()
 
-#	print
-#	print "SETUP STARTS"
-#	print
-#	print "Location:"
-#	print(reader2.returnFilename())
-#	print "Type:"
-#	print(reader2.returnFiletype())
-#	print "(Emtpy) Rrw:"
-#	print(reader2.returnRawcontent())
-#	print "(Empty) pro:"
-#	print(reader2.returnProcontent())
-#	print
-#	print "READING STARTS"
-#	print
-#	reader2.readFile()
-#	print "New raw:"
-#	print(reader2.returnRawcontent())
-#	print
-#	print "PROCESSING STARTS"
-#	print
-#	reader2.processContent()
-#	print "New pro:"
-#	print(reader2.returnProcontent())
-#	print
-#	print "<Translating>"
-#	reader2.translateProcontent()
+	# print
+	# print "SETUP STARTS"
+	# print
+	# print "Location:"
+	# print(reader2.returnFilename())
+	# print "Type:"
+	# print(reader2.returnFiletype())
+	# print "(Emtpy) Rrw:"
+	# print(reader2.returnRawcontent())
+	# print "(Empty) pro:"
+	# print(reader2.returnProcontent())
+	# print
+	# print "READING STARTS"
+	# print
+	# reader2.readFile()
+	# print "New raw:"
+	# print(reader2.returnRawcontent())
+	# print
+	# print "PROCESSING STARTS"
+	# print
+	# reader2.processContent()
+	# print "New pro:"
+	# print(reader2.returnProcontent())
+	# print
+	# print "<Translating>"
+	# reader2.translateProcontent()
 	
+	# print
+	# print "SETUP STARTS"
+	# print
+	# print "Location:"
+	# print "SETUP STARTS"
+	# print
+	# print "Location:"
+	# print(reader3.returnFilename())
+	# print "Type:"
+	# print(reader3.returnFiletype())
+	# print "(Emtpy) Rrw:"
+	# print(reader3.returnRawcontent())
+	# print "(Empty) pro:"
+	# print(reader3.returnProcontent())
+	# print
+	# print "READING STARTS"
+	# print
+	# reader3.readFile()
+	# print "New raw:"
+	# print(reader3.returnRawcontent())
+	# print
+	# print "PROCESSING STARTS"
+	# print
+	# reader3.processContent()
+	# print "New pro:"
+	# print(reader3.returnProcontent())
+	# print

@@ -14,13 +14,23 @@ class Lemma(object):
 		else:
 			self.word = str(word_override)
 	# Type of Word, if NN , ADJ or V - otherwise <other> to differentiate -> STR
-		if wordtype not in 'NN_NNP_NNS_JJ_VBG_VBN_VBP_VBZ':
+		if wordtype in "NN_NNP_NNS":
+			self.wordtype = "n"
+		if wordtype in "VBG_VBN_VBP_VBZ":
+			self.wordtype = "v"
+		if wordtype in "JJ":
+			self.wordtype = "a"
+		if wordtype in "RB":
+			self.wordtype = "r"
+		if wordtype not in 'NN_NNP_NNS_JJ_VBG_VBN_VBP_VBZ_RB':
 			self.wordtype = "other"
-		else:
-			self.wordtype = str(wordtype)
+		
 	# Annotated Sense of the word, if existent - otherwise <0> to differentiate -> INT
-		if sense != "-":
+		if sense != "-" and "." not in sense:
 			self.sense = int(sense)
+		elif "." in sense:
+			dummy_split = sense.split(".")
+			self.sense = int(dummy_split[0])
 		else:
 			self.sense = 0
 	

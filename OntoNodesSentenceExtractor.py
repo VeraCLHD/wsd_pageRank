@@ -3,6 +3,7 @@ import Word
 class OntoNodesSentenceExtractor:
 	def __init__(self, graph_construction_style, measure_type, d=0.8):
         
+		
     
     def getNextSentence(self):
         #extract next sentence from ontoNotes        
