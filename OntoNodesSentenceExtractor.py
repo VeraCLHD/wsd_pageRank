@@ -1,11 +1,20 @@
 import Word
 
 class OntoNodesSentenceExtractor:
-	def __init__(self, graph_construction_style, measure_type, d=0.8):
+	def __init__(self, data):
         
-		
+		self.processed_corpus = data
+		self.counter = -1
     
     def getNextSentence(self):
+		if self.counter != len(self.processed_corpus):
+			counter += 1
+			dummy_sentence =self.processed_corpus[counter]
+		else:
+			dummy_sentence = self.processed_corpus[counter]
+			counter = -1
+		return dummy_sentence
+		
         #extract next sentence from ontoNotes        
         #stopWords rauswerfen
         #output: [[word1, [wordNet_sense1]], [word2, [wordNet_sense2]], ...]
@@ -14,5 +23,11 @@ class OntoNodesSentenceExtractor:
         
         
     def sentenceToWords(self, sentence):
+		dummy_sentence = []
+		for a in range(len(sentence)):
+			dummy_list = sentence[a]
+			dummy_sentence.append(dummy_list[0])
+		return dummy_sentence
+			
         #input: sentence wie aus get_next_sentence
         #output: [word1, word2, ...]
