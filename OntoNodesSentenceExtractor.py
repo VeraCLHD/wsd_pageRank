@@ -5,7 +5,7 @@ class OntoNodesSentenceExtractor:
         
     
     def getNextSentence(self):
-        #extract next sentence from ontoNotes        
+        #extract next sentence from ontoNotes
         #stopWords rauswerfen
         #output: [[word1, [wordNet_sense1]], [word2, [wordNet_sense2]], ...]
         #words sind hier einfach strings, keine objekte der klasse Word

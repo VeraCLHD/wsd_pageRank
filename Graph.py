@@ -2,15 +2,21 @@ import Node
 import Word
 
 class Graph(object):
-    def __init__(self, words, nodes, d):
+    def __init__(self, words, root_nodes, nodes, d):
         if type(words) == list:
             self.words = words
         else:
             sys.stderr.write('illegal type for words. Has to be list')
         if type(nodes) == list:
-            self.nodes = nodes
+            self.nodes = nodes #all synsets in the graph
         else:
             sys.stderr.write('illegal type for nodes. Has to be list')
+        if type(root_nodes) == list:
+            self.root_nodes = root_nodes #synsets of words in sentence
+        elif type(root_nodes) == set:
+            self.root_nodes = list(word_nodes)
+        else:
+            sys.stderr.write('illegal type for word_nodes. Has to be list')
 
         self.d = d
    
@@ -35,9 +41,31 @@ class Graph(object):
                     break
             for node in self.nodes: #declare weights as old weights
                 node.previous_pr = node.page_rank
-            
+    
+    def calculatePersonalPageRank(self, d): #fill the graph with sand and let it flow iteratively along edges until the amounts of sand at each node don't change anymore
+        for node in self.nodes:
+            node.previous_pr = 1.0/len(self.nodes) #initialize equal start weights which sum up to 1
+        min_change_val = 0.01
+        min_change = True #chechs after each iteration if a minimum change happend in the algorithm
+        div = 1.0/len(self.root_nodes)
+        while min_change == True: #from here the iterations begin
+            min_change = False
+            for node in self.root_nodes: #begin to fill node weights with damping partition
+                node.personalized_page_rank = (1-d)*div
+            for node in self.nodes:
+                cnt_neighbours = len(node.neighbours)
+                for neighbour in node.neighbours: #let weight flow from each node to its neighbours
+                    neighbour.personalized_page_rank += d*node.previous_pr/cnt_neighbours
+            for node in self.nodes: #check min_difference to previous iteration
+                if abs(node.previous_pr-node.personalized_page_rank)>min_change_val:
+                    min_change = True
+                    break
+            for node in self.nodes: #declare weights as old weights
+                node.previous_pr = node.personalized_page_rank
+    
             
     def calculateKPP(self): #key player problem, not normalized. for each node, sum up inversed distances to each other node. the information for betweenness can be extracted almost identically, so the basic informations for betweenness are gathered in here, too. the lines where this happens are marked
+        print self.nodes
         for node in self.nodes: #create a bft for each node
             kpp_value = 0.0
             node_list = self.nodes[:] #this is used to check if we have seen a node before
@@ -137,7 +165,7 @@ class Graph(object):
                             queue.append(node2)
         return result
         
-    def getResults(self, usedMeasure): #PR, KPP, iD, BWN, MF
+    def getResults(self, usedMeasure): #PR, PPR, KPP, iD, BWN, MF
         result_list = []
         for word in self.words:
             maximum = [None, 0]
@@ -145,6 +173,8 @@ class Graph(object):
                 value = None
                 if usedMeasure == "PR":
                     value = node.page_rank
+                if usedMeasure == "PPR":
+                    value = node.personalized_page_rank
                 if usedMeasure == "KPP":
                     value = node.kpp
                 if usedMeasure == "iD":
@@ -181,14 +211,17 @@ if __name__ == "__main__":
     Word3.synsets = [Node3, Node6]
     
     
-    g = Graph([Word1, Word2, Word3], [Node1, Node2, Node3, Node4, Node5, Node6, Node7], 0.8)
+    g = Graph([Word1, Word2, Word3], [Node2, Node6], [Node1, Node2, Node3, Node4, Node5, Node6, Node7], 0.8)
     g.calculatePageRank(g.d)
+    g.calculatePersonalPageRank(g.d)
     g.calculateKPP()
     g.calculateInDegree()
     g.calculateBetweenness()
     g.calculateMaximumFlow()
     print "pageRank:"
-    print g.getResults("PR")   
+    print g.getResults("PR")
+    print "personalized pageRank"
+    print g.getResults("PPR")
     print "key player:"
     print g.getResults("KPP")
     print "in-Degree:"
