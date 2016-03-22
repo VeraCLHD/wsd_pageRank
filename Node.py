@@ -37,7 +37,6 @@ class Node(object):
     def createNode(name):
         for node in Node.nodes:
             if node.__hash__() == hash(name):
-                print "test"
                 return node
         return Node(name)
         
