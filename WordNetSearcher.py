@@ -6,6 +6,8 @@ from Word import Word
 from Node import Node
 from Graph import Graph
 from Tree import Tree
+from Evaluator import Evaluator
+from Data import Data
 from collections import deque
 import sys
 import re
@@ -136,7 +138,6 @@ class WordNetSearcher(object):
         count = 0
         for node in self.nodes: #search for all nodes that will belong to the graph
             if len(node.tree_dictionary.keys())>2: #this node only creates a new path if it is close enough to at least two root_nodes
-                self.graph_nodes.add(node) #the node itself is added to graph
                 dicti = list(node.tree_dictionary.keys())
                 dicti.remove(node)
                 for key_iter1 in range(1, len(dicti)):
@@ -144,7 +145,7 @@ class WordNetSearcher(object):
                         key1 = dicti[key_iter1]
                         key2 = dicti[key_iter2]
                         first_word = None
-                        relevant_synsets = False
+                        different_words = False
                         for word in self.inputWords: #all that is coming in the next 15 lines is to check if two synsets belong to the same word. if that is the case, their path is not added to the graph
                             for synset in word.synsets:
                                 if synset == key1:
@@ -152,19 +153,20 @@ class WordNetSearcher(object):
                                         first_word = word
                                         break
                                     else:
-                                        relevant_synsets = True
-                        if relevant_synsets == False:
+                                        different_words = True
+                        if different_words == False:
                             if not key2 in first_word.synsets:
                                 for word in self.inputWords:
                                     if word != first_word:
                                         for synset in word.synsets:
                                             if synset == key2:
-                                                relevant_synsets = True
+                                                different_words = True
                             else:
-                                relevant_synsets = True
+                                different_words = True
                         
-                        if relevant_synsets == True:
+                        if different_words == True:
                             if not [key1, key2] in self.combinations:
+                                self.graph_nodes.add(node)
                                 self.combinations.append([key1, key2])
                                 #print key1, key2
                                 present_node = node
@@ -202,14 +204,20 @@ if __name__ == "__main__":
     wordsearcher.createTrees()
     
     g = wordsearcher.constructGraph(0.85)
-    print len(wordsearcher.nodes)
-    print len(g.nodes)
-    # g.calculatePageRank(g.d)
+    for node in g.nodes:
+        print node
+        print node.neighbours
+    print "root_nodes:"
+    for node in g.root_nodes:
+        print node
+    # print len(wordsearcher.nodes)
+    # print len(g.nodes)
+    g.calculatePageRank(g.d)
     # g.calculatePersonalPageRank(g.d)
     # g.calculateKPP()
     # g.calculateInDegree()
     # g.calculateBetweenness()
-    g.calculateMaximumFlow()
+    # g.calculateMaximumFlow()
     # print "pageRank:"
     # print g.getResults("PR")
     # print "personalized pageRank"
@@ -222,29 +230,19 @@ if __name__ == "__main__":
     # print g.getResults("BWN")
     # print "Maximum Flow:"
     # print g.getResults("MF")
-    
-    #graph = wordsearcher.constructGraph2(self.input_words, WordNetSearcher.indexDictionary.keys(), self.dataDictionary.keys(), 0.85) #words, word_nodes, nodes, d
-    #for node in graph.nodes:
-        #print node.name
-        #for node in tree.nodes:
-        #    print node.name
-    #for synset in WordNetSearcher.indexDictionary[word3.name]:
-    #    print "SYNSET: " + synset
-    #    print WordNetSearcher.dataDictionary[synset]
-    #graph = wordsearcher.createInitialTreeDraft()
-    #if graph != None:
-    #    for node in graph.nodes:
-    #        print node.name
-    #        print node.neighbours
-    # graph = [[2,3],[4,5,1],[6,7,4,1],[2,3],[2],[3],[3]]
-    # startnode = 1
-    # visited = [False]*len(graph)   # Flags, welche Knoten bereits besucht wurden
-    # q = deque()                    # Queue fur die zu besuchenden Knoten
-    # q.append(startnode)            # Startknoten in die Queue einf
-    # while len(q) > 0:              # Solange es noch unbesuchte Knoten gibt
-        # node = q.popleft()         # Knoten aus der Queue nehmen (first in - first out)
-        # if not visited[node]:      # Falls node noch nicht (auf einem anderen Weg) besucht wurde
-            # visited[node] = True  # Markiere node als besucht
-            # print node            # Drucke Knotennummer
-            # for neighbor in graph[node]:    # f Nachbarn in die Queue ein
-                # q.append(neighbor)
+    data = Data.Data()
+    data.addData("D:/TEST/Corpus/big_test.txt","ON")
+    data.addData("D:/TEST/Index/index.adj","IN")
+    data.addData("D:/TEST/Index/index.adv","IN")
+    data.addData("D:/TEST/Index/index.noun","IN")
+    data.addData("D:/TEST/Index/index.verb","IN")
+    data.addFolder("D:/TEST/FunctionWords/","*.txt","FW")
+    data.addFolder("D:/TEST/Translation/","*.xml","TL")
+    data.processData_to_sentences()
+    ontoNodes = OntoNodesSentenceExtractor.OntoNodesSentenceExtractor(data)
+    Evaluator.evaluate("normal","PR", ontoNodes)
+    Evaluator.evaluate("normal","PPR", ontoNodes)
+    Evaluator.evaluate("normal","KPP", ontoNodes)
+    Evaluator.evaluate("normal","iD", ontoNodes)
+    Evaluator.evaluate("normal","BWN", ontoNodes)
+    Evaluator.evaluate("normal","MF", ontoNodes)

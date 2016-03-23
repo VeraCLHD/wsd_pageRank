@@ -1,7 +1,10 @@
 import sys
 class Node(object):
     nodes = []
+    counter = 0
     def __init__(self, name):
+        self.counter = Node.counter+0
+        Node.counter +=1
         #basic attributes
         found = False
         #if type(name) == str:
@@ -31,7 +34,7 @@ class Node(object):
         return hash(self.name)
         
     def __repr__(self):
-        return self.name
+        return str(self.counter)
     
     @staticmethod
     def createNode(name):

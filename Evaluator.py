@@ -2,7 +2,7 @@ import WordNetSearcher
 import OntoNodesSentenceExtractor
 
 class Evaluator:
-	def __init__(self, graph_construction_style, measure_type, d=0.8):
+    def __init__(self, graph_construction_style, measure_type, d=0.85):
         if measure_type in ["PR", "KPP", "iD", "BWN", "MF"]:
             self.measure_type = measure_type
         else:
@@ -30,24 +30,23 @@ class Evaluator:
             
 
         
-        
-    def evaluate(self):
-        o = ontoNodesSentenceExtractor()
-        e = Evaluator("normal", "PR", 0.8)
-        while sentence not []:
-            sentence = ontoNodesSentenceExtractor.get_next_sentence()
-            words = ontoNodesSentenceExtractor.sentenceToWords()
+    @staticmethod    
+    def evaluate(mode, measureType, onto):
+        e = Evaluator(mode, measureType)
+        while not sentence:
+            sentence = onto.get_next_sentence()
+            words = onto.sentenceToWords()
             g = WordNetSearcher.createGraph(words)
-            if e.measure_type = "PR":
+            if e.measure_type == "PR":
                 g.calculatePageRank(g.d)
-            if e.measure_type = "KPP":
+            if e.measure_type == "KPP":
                 g.calculateKPP()
-            if e.measure_type = "iD":
+            if e.measure_type == "iD":
                 g.calculateInDegree()
-            if e.measure_type = "BWN":
+            if e.measure_type == "BWN":
                 g.calculateKPP()
                 g.calculateBetweenness()
-            if e.measure_type = "MF":
+            if e.measure_type == "MF":
                 g.calculateMaximumFlow()
             results = g.getResults(measure_type)
             if len(results)!=len(sentence):
