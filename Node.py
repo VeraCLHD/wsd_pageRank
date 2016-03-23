@@ -1,16 +1,20 @@
 import sys
 class Node(object):
+    nodes = []
     def __init__(self, name):
         #basic attributes
-        if type(name) == str:
-            self.name = name
-        else:
-            sys.stderr.write('illegal type for name. Has to be str')
-        self.neighbours = []        
+        found = False
+        #if type(name) == str:
+        self.name = name
+        #else:
+            #sys.stderr.write('illegal type for name. Has to be str')
+        Node.nodes.append(self)
+        self.neighbours = []
         self.sub_tree = None
         #measures
         self.in_degree = 0
         self.page_rank = 0
+        self.personalized_page_rank = 0
         self.kpp = 0
         self.betweenness = 0
         self.residual_value = 0
@@ -23,6 +27,18 @@ class Node(object):
         self.residual_graph_neighbours = {}
         self.predecessor = None #needed for bfs for maximum flow
         
+    def __hash__(self):
+        return hash(self.name)
+        
+    def __repr__(self):
+        return self.name
+    
+    @staticmethod
+    def createNode(name):
+        for node in Node.nodes:
+            if node.__hash__() == hash(name):
+                return node
+        return Node(name)
         
     def initializeInDegree(self):
         self.in_degree = len(self.neighbours)
@@ -35,16 +51,10 @@ class Node(object):
     def resetResidualValues(self):
         for key in self.residual_graph_neighbours.keys():
             self.residual_graph_neighbours[key] = 0
-    
-    def getNeighbours(self):
-	    return self.neighbours
-    def setNeighbours(self, neighbours):
-		self.neighbours = neighbours
-    def getName(self):
-	    return self.name
-    def setName(self, name):
-	    self.name = name
-    
-    
+
+if __name__ == "__main__":
+    node1 = Node.createNode("a")
+    node2 = Node.createNode("a")
+    print node1 == node2
     
     

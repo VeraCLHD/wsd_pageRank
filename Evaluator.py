@@ -53,12 +53,14 @@ class Evaluator:
             if len(results)!=len(sentence):
                 sys.stderr.write("fatal error: gold and auto sentences don't have same length")
             else: #fill evaluation
-                for word in results:
-                    if word[0]!=sentence[0]:
+                for sentence_iterator in range(len(sentence)):
+                    word = results[sentence_iterator]
+                    sent = sentence[sentence_iterator]
+                    if word[0] != sent[0]:
                         sys.stderr.write('fatal error: words not at the same place in gold and auto sentence')
                     else:
                         self.sum += 1 #all words
-                        if word[1] == sentence[1]: #correctly classified
+                        if word[1] in sent[1]: #correctly classified
                             self.true_positives += 1
                         else:
                             if word[1] == "": #dead word -> not classified
