@@ -127,6 +127,7 @@ class Graph(object):
             node.initializeResidualGraph()
         self.temp_nodes = self.nodes[:]
         while len(self.temp_nodes)>0:
+            print len(self.temp_nodes)
             node1 = self.temp_nodes.pop()
             nodes2 = self.temp_nodes[:]
             for node2 in nodes2:
@@ -180,13 +181,10 @@ class Graph(object):
                 if usedMeasure == "PPR":
                     value = node.personalized_page_rank
                 if usedMeasure == "KPP":
-                    print "KPP"
                     value = node.kpp
                 if usedMeasure == "iD":
-                    print "iD"
                     value = node.in_degree                   
                 if usedMeasure == "BWN":
-                    print "BWN"
                     value = node.betweenness
                 if usedMeasure == "MF":
                     value = node.residual_value

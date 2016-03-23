@@ -68,10 +68,7 @@ class WordNetSearcher(object):
         #find all 8 digit numbers in the line that are not the synset itself
         semRelations = set([m.strip() for m in re.findall("[0-9]{8}", lineAsString) if m != synset])
         dict = WordNetSearcher.dataDictionary
-        if synset in dict:
-            dict[synset].update(semRelations)
-        else:
-            dict.setdefault(synset, semRelations)
+        dict.setdefault(synset, semRelations)
 
     def getMeaningsForWord(self, word):
         wordfoundInWordnet = False
@@ -96,17 +93,21 @@ class WordNetSearcher(object):
         while iterator < 3:
             iterator += 1
             for node in queue:
+                neighbouries = set()
                 for neighbour in WordNetSearcher.dataDictionary[node.name]:
                     neighbour_node = Node.createNode(neighbour)
                     self.nodes.add(neighbour_node)
-                    neighbour_node.neighbours = WordNetSearcher.dataDictionary[neighbour]
+                    neighbour_node.neighbours.add(node)
+                    neighbouries.add(neighbour_node)
                     if not neighbour_node in results:
                         results.append(neighbour_node)
                         this_iteration.append(neighbour_node)
                         neighbour_node.tree_dictionary[wurzel] = [[node], iterator]
+                        
                     else:
                         if neighbour_node.tree_dictionary[wurzel][1] == iterator: #diese vier zeilen braucht man um ggf das tree_dictionary um node zu erweitern
                             neighbour_node.tree_dictionary[wurzel][0].append(node)
+                node.neighbours = neighbouries
             queue = this_iteration
             this_iteration = []
         subtree = Tree(results)
@@ -121,17 +122,18 @@ class WordNetSearcher(object):
             if not word.deadWord:
                 self.getMeaningsForWord(word)
                 synsetsForWord = word.synsets
-                for synset in synsetsForWord:
-                    root_node = Node.createNode(synset)
-                    self.root_nodes.add(root_node)
-                    root_node.neighbours = WordNetSearcher.dataDictionary[synset.name]
-                    self.createTree(root_node)
+                for root in synsetsForWord:
+                    self.root_nodes.add(root)
+                    root.neighbours = WordNetSearcher.dataDictionary[root.name]
+                    for neighbour in root.neighbours:
+                        neighbour = Node.createNode(neighbour)
+                        neighbour.neighbours.add(Node.createNode(root))
+                    self.createTree(root)
     
     
     def constructGraph(self, d):
         print "construct graph"
         count = 0
-        print self.root_nodes
         for node in self.nodes: #search for all nodes that will belong to the graph
             if len(node.tree_dictionary.keys())>2: #this node only creates a new path if it is close enough to at least two root_nodes
                 self.graph_nodes.add(node) #the node itself is added to graph
@@ -141,8 +143,6 @@ class WordNetSearcher(object):
                     for key_iter2 in range(key_iter1+1, len(dicti)):
                         key1 = dicti[key_iter1]
                         key2 = dicti[key_iter2]
-                        print node
-                        print key1, key2
                         first_word = None
                         relevant_synsets = False
                         for word in self.inputWords: #all that is coming in the next 15 lines is to check if two synsets belong to the same word. if that is the case, their path is not added to the graph
@@ -169,14 +169,13 @@ class WordNetSearcher(object):
                                 #print key1, key2
                                 present_node = node
                                 while not present_node == key1: #walk to first root, collect the nodes
+                                    
                                     present_node = present_node.tree_dictionary[key1][0][0]
                                     self.graph_nodes.add(present_node)
                                 present_node = node
                                 while not present_node == key2: #walk to second node
                                     present_node = present_node.tree_dictionary[key2][0][0]
                                     self.graph_nodes.add(present_node)
-                            else:
-                                print "yeahyeahyeah"
         for node in self.graph_nodes: #delete all nodes and connections that don't belong to the graph
             neighbours_nodes = list(node.neighbours)
             for sub_node in node.neighbours:
@@ -197,7 +196,7 @@ if __name__ == "__main__":
     print "creating data files"
     WordNetSearcher.readDataFiles()
     print "starting algorithm"
-    listOfAnimals = ["am", "cat", "fish", "tree"] # reference to object
+    listOfAnimals = ["fish", "cat"] # reference to object
     print "start wordNetSearcher"
     wordsearcher = WordNetSearcher(listOfAnimals)
     wordsearcher.createTrees()
@@ -207,20 +206,20 @@ if __name__ == "__main__":
     print len(g.nodes)
     # g.calculatePageRank(g.d)
     # g.calculatePersonalPageRank(g.d)
-    g.calculateKPP()
-    g.calculateInDegree()
-    g.calculateBetweenness()
-    # g.calculateMaximumFlow()
+    # g.calculateKPP()
+    # g.calculateInDegree()
+    # g.calculateBetweenness()
+    g.calculateMaximumFlow()
     # print "pageRank:"
     # print g.getResults("PR")
     # print "personalized pageRank"
     # print g.getResults("PPR")
     # print "key player:"
-    print g.getResults("KPP")
+    # print g.getResults("KPP")
     # print "in-Degree:"
-    print g.getResults("iD")
+    # print g.getResults("iD")
     # print "Betweenness:"
-    print g.getResults("BWN")
+    # print g.getResults("BWN")
     # print "Maximum Flow:"
     # print g.getResults("MF")
     

@@ -9,7 +9,7 @@ class Node(object):
         #else:
             #sys.stderr.write('illegal type for name. Has to be str')
         Node.nodes.append(self)
-        self.neighbours = []
+        self.neighbours = set()
         self.sub_tree = None
         #measures
         self.in_degree = 0
