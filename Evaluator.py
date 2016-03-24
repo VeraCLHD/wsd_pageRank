@@ -11,69 +11,85 @@ class Evaluator:
             self.d = d
         else:
             sys.stderr.write('illegal type for d. has to be float or int')
-        if self.graph_construction_style in ["normal", "full"]:
+        if graph_construction_style in ["normal", "full"]:
             self.graph_construction_style = graph_construction_style
         else:
             sys.stderr.write('illegal type for graph_construction_style. has to be "normal" or "full"')
         self.true_positives = 0
+        #self.true_negatives = 0
         self.false_positives = 0
         self.false_negatives = 0
         self.non_recognized = 0
         self.sum = 0
         
-        self.precision = 0
-        self.recall = 0
-        self.accuracy = 0
+        self.micro_precision = 0
+        self.micro_recall = 0
         self.f_measure = 0
-        self.specifity = 0
-        self.AUC = 0 #area under the curve
             
 
         
     @staticmethod    
     def evaluate(mode, measureType, onto):
         e = Evaluator(mode, measureType)
-        while not sentence:
-            sentence = onto.get_next_sentence()
-            words = onto.sentenceToWords()
-            g = WordNetSearcher.createGraph(words)
-            if e.measure_type == "PR":
-                g.calculatePageRank(g.d)
-            if e.measure_type == "KPP":
-                g.calculateKPP()
-            if e.measure_type == "iD":
-                g.calculateInDegree()
-            if e.measure_type == "BWN":
-                g.calculateKPP()
-                g.calculateBetweenness()
-            if e.measure_type == "MF":
-                g.calculateMaximumFlow()
-            results = g.getResults(measure_type)
-            if len(results)!=len(sentence):
-                sys.stderr.write("fatal error: gold and auto sentences don't have same length")
-            else: #fill evaluation
-                for sentence_iterator in range(len(sentence)):
-                    word = results[sentence_iterator]
-                    sent = sentence[sentence_iterator]
-                    if word[0] != sent[0]:
-                        sys.stderr.write('fatal error: words not at the same place in gold and auto sentence')
-                    else:
-                        self.sum += 1 #all words
-                        if word[1] in sent[1]: #correctly classified
-                            self.true_positives += 1
+
+        sentence = True
+
+        while sentence:
+            sentence = onto.getNextSentence()
+            if len(sentence) > 0:
+                # print sentence
+                words = onto.sentenceToWords(sentence)
+
+                wordsearcher = WordNetSearcher.WordNetSearcher(words)
+
+                wordsearcher.createTrees()
+                g = wordsearcher.constructGraph(0.85)
+                
+                if e.measure_type == "PR":
+                    g.calculatePageRank(g.d)
+                if e.measure_type == "KPP":
+                    g.calculateKPP()
+                if e.measure_type == "iD":
+                    g.calculateInDegree()
+                if e.measure_type == "BWN":
+                    g.calculateKPP()
+                    g.calculateBetweenness()
+                if e.measure_type == "MF":
+                    g.calculateMaximumFlow()
+                results = g.getResults(e.measure_type)
+                if len(results)!=len(sentence):
+                    sys.stderr.write("fatal error: gold and auto sentences don't have same length")
+                else: #fill evaluation
+                    for sentence_iterator in range(len(sentence)):
+                        word = results[sentence_iterator]
+                        sent = sentence[sentence_iterator]
+                        if word[0] != sent[0]:
+                            sys.stderr.write('fatal error: words not at the same place in gold and auto sentence')
                         else:
-                            if word[1] == "": #dead word -> not classified
-                                self.false_negatives += 1
-                                self.non_recognized += 1
-                            else: #wrongly classified
-                                self.false_negatives += 1
-                                self.false_positives += 1
-        self.accuracy = float(self.true_positives + self.true_negatives)/self.all
-        self.micro_precision = float(self.true_positives)/(self.true_positives + self.false_positives)
-        self.micro_recall = float(self.true_positives)/(self.true_positives+self.false_negatives)
-        self.micro_f_measure = 2*float(self.precision*self.recall)/(self.precision+self.recall)
+                            e.sum += 1 #all words
+                            if word[1] in sent[1]: #correctly classified
+                                e.true_positives += 1
+                            elif sent[1] == []:
+                                e.true_positives += 1
+                            else:
+                                if word[1] == "": #dead word -> not classified
+                                    e.false_negatives += 1
+                                    e.non_recognized += 1
+                                else: #wrongly classified
+                                    e.false_negatives += 1
+                                    e.false_positives += 1
+        #e.accuracy = float(e.true_positives + e.true_negatives)/e.sum
+        print e.true_positives
+        print e.false_positives
+        print e.false_negatives
+        print
+        e.micro_precision = float(e.true_positives)/(e.true_positives + e.false_positives)
+        e.micro_recall = float(e.true_positives)/(e.true_positives+e.false_negatives)
+        print e.micro_precision
+        print e.micro_recall
+        e.micro_f_measure = 2*float(e.micro_precision*e.micro_recall)/(e.micro_precision+e.micro_recall)
         
-        finals = [self.accuracy, self.micro_precision, self.micro_recall, self.micro_f_measure, self.non_recognized]
-        print "Results in order: Accuracy, Precision, Recall, F-Measure, Non-recognized"
+        finals = [e.micro_precision, e.micro_recall, e.micro_f_measure, e.non_recognized]
+        print "Results in order: Precision, Recall, F-Measure, Non-recognized"
         for measure in finals:
             print measure

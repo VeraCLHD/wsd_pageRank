@@ -127,7 +127,7 @@ class Graph(object):
             node.initializeResidualGraph()
         self.temp_nodes = self.nodes[:]
         while len(self.temp_nodes)>0:
-            print len(self.temp_nodes)
+            #print len(self.temp_nodes)
             node1 = self.temp_nodes.pop()
             nodes2 = self.temp_nodes[:]
             for node2 in nodes2:
@@ -190,9 +190,15 @@ class Graph(object):
                     value = node.residual_value
                 if value > maximum[1]:
                     maximum = [node, value]
-            print word.name
-            print maximum[1]
-            result_list.append([word.name, maximum[0].name])
+            # print word.name
+            # print maximum[1]
+            if maximum[0] != None:
+                result_list.append([word.name, maximum[0].name])
+            else:
+                if len(word.synsets) > 0:
+                    result_list.append([word.name, list(word.synsets)[0]])
+                else:
+                    result_list.append([word.name, ""])
         return result_list
     
 if __name__ == "__main__":
