@@ -69,9 +69,9 @@ if __name__ == "__main__":
     # data2 = process
     ontoNodes = OntoNodesSentenceExtractor.OntoNodesSentenceExtractor(data)
     print "------------ The fun starts here"
-    # Evaluator.Evaluator.evaluate("normal","PR", ontoNodes)
-    # Evaluator.evaluate("normal","PPR", ontoNodes)
-    # Evaluator.evaluate("normal","KPP", ontoNodes)
+    Evaluator.Evaluator.evaluate("normal","PR", ontoNodes)
+    Evaluator.Evaluator.evaluate("normal","PPR", ontoNodes)
+    Evaluator.Evaluator.evaluate("normal","KPP", ontoNodes)
     Evaluator.Evaluator.evaluate("normal","iD", ontoNodes)
-    # Evaluator.evaluate("normal","BWN", ontoNodes)
-    # Evaluator.evaluate("normal","MF", ontoNodes)
+    Evaluator.Evaluator.evaluate("normal","BWN", ontoNodes)
+    Evaluator.Evaluator.evaluate("normal","MF", ontoNodes)

@@ -25,6 +25,12 @@ class Graph(object):
    
                     
     def calculatePageRank(self, d): #fill the graph with sand and let it flow iteratively along edges until the amounts of sand at each node don't change anymore
+        if len(self.nodes) == 0:
+            for word in self.words:
+                if len(word.synsets) > 0:
+                    list(word.synsets)[0].page_rank = 1
+            return
+        
         for node in self.nodes:
             node.previous_pr = 1.0/len(self.nodes) #initialize equal start weights which sum up to 1
         min_change_val = 0.01
@@ -46,6 +52,12 @@ class Graph(object):
                 node.previous_pr = node.page_rank
     
     def calculatePersonalPageRank(self, d): #fill the graph with sand and let it flow iteratively along edges until the amounts of sand at each node don't change anymore
+        if len(self.nodes) == 0:
+            for word in self.words:
+                if len(word.synsets) > 0:
+                    list(word.synsets)[0].personalized_page_rank = 1
+            return
+        
         for node in self.nodes:
             node.previous_pr = 1.0/len(self.nodes) #initialize equal start weights which sum up to 1
         min_change_val = 0.01
@@ -70,6 +82,12 @@ class Graph(object):
     
             
     def calculateKPP(self): #key player problem, not normalized. for each node, sum up inversed distances to each other node. the information for betweenness can be extracted almost identically, so the basic informations for betweenness are gathered in here, too. the lines where this happens are marked
+        if len(self.nodes) == 0:
+            for word in self.words:
+                if len(word.synsets) > 0:
+                    list(word.synsets)[0].kpp = 1
+            return
+            
         for node in self.nodes: #create a bft for each node
             kpp_value = 0.0
             node_list = self.nodes[:] #this is used to check if we have seen a node before
@@ -102,6 +120,11 @@ class Graph(object):
             node.initializeInDegree()
        
     def calculateBetweenness(self): #not normalized. for a node n: for each pair of nodes a,b find out what percentage of the shortest paths from a to b go through n
+        if len(self.nodes) == 0:
+            for word in self.words:
+                if len(word.synsets) > 0:
+                    list(word.synsets)[0].betweenness = 1
+            return
         node_zero = self.nodes[1]
         for node in self.nodes: #find all shortest paths from node to node
             for key in node.tree_dictionary.keys():

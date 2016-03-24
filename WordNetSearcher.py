@@ -86,7 +86,6 @@ class WordNetSearcher(object):
             print
     
     def createTree(self, wurzel):
-        print "createTree"
         queue = [wurzel]
         this_iteration = []
         results = [wurzel]
@@ -133,7 +132,6 @@ class WordNetSearcher(object):
     
     
     def constructGraph(self, d):
-        print "construct graph"
         count = 0
         for node in self.nodes: #search for all nodes that will belong to the graph
             if len(node.tree_dictionary.keys())>2: #this node only creates a new path if it is close enough to at least two root_nodes

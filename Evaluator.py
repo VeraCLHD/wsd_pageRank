@@ -1,12 +1,13 @@
 import WordNetSearcher
 import OntoNodesSentenceExtractor
+import sys
 
 class Evaluator:
     def __init__(self, graph_construction_style, measure_type, d=0.85):
-        if measure_type in ["PR", "KPP", "iD", "BWN", "MF"]:
+        if measure_type in ["PR", "PPR", "KPP", "iD", "BWN", "MF"]:
             self.measure_type = measure_type
         else:
-            sys.stderr.write('illegal measure_type. has to be "PR", "KPP", "iD", "BWN" or "MF"')
+            sys.stderr.write('illegal measure_type. has to be "PR", "PPR", "KPP", "iD", "BWN" or "MF"')
         if type(d) == float or int:
             self.d = d
         else:
@@ -78,15 +79,8 @@ class Evaluator:
                                 else: #wrongly classified
                                     e.false_negatives += 1
                                     e.false_positives += 1
-        #e.accuracy = float(e.true_positives + e.true_negatives)/e.sum
-        print e.true_positives
-        print e.false_positives
-        print e.false_negatives
-        print
         e.micro_precision = float(e.true_positives)/(e.true_positives + e.false_positives)
         e.micro_recall = float(e.true_positives)/(e.true_positives+e.false_negatives)
-        print e.micro_precision
-        print e.micro_recall
         e.micro_f_measure = 2*float(e.micro_precision*e.micro_recall)/(e.micro_precision+e.micro_recall)
         
         finals = [e.micro_precision, e.micro_recall, e.micro_f_measure, e.non_recognized]
