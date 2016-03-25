@@ -1,6 +1,7 @@
 import sys
 class Node(object):
     nodes = []
+    
     counter = 0
     def __init__(self, name):
         self.counter = Node.counter+0
@@ -34,14 +35,18 @@ class Node(object):
         return hash(self.name)
         
     def __repr__(self):
-        return str(self.counter)
+        return str(self.name)
     
     @staticmethod
     def createNode(name):
+        if type(name) != str:
+            print "boehse"
         for node in Node.nodes:
             if node.__hash__() == hash(name):
                 return node
         return Node(name)
+    
+
         
     def initializeInDegree(self):
         self.in_degree = len(self.neighbours)

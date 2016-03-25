@@ -48,6 +48,8 @@ class Evaluator:
                 
                 if e.measure_type == "PR":
                     g.calculatePageRank(g.d)
+                if e.measure_type == "PPR":
+                    g.calculatePersonalPageRank(g.d)
                 if e.measure_type == "KPP":
                     g.calculateKPP()
                 if e.measure_type == "iD":
@@ -56,6 +58,13 @@ class Evaluator:
                     g.calculateKPP()
                     g.calculateBetweenness()
                 if e.measure_type == "MF":
+                    g.calculateMaximumFlow()
+                if e.measure_type == "ALL":
+                    g.calculatePageRank(g.d)
+                    g.calculatePersonalPageRank(g.d)
+                    g.calculateKPP()
+                    g.calculateInDegree()
+                    g.calculateBetweenness()
                     g.calculateMaximumFlow()
                 results = g.getResults(e.measure_type)
                 if len(results)!=len(sentence):

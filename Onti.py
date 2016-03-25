@@ -48,7 +48,7 @@ if __name__ == "__main__":
     data = Data.Data()
     dir = os.path.realpath(__file__)
 
-    data.addData("\\".join(dir.split("\\")[:-1])+"\\Corpus\\tiny_test.txt","ON")
+    data.addData("\\".join(dir.split("\\")[:-1])+"\\Corpus\\medium_test.txt","ON")
     #print "corpus done"
     data.addData("\\".join(dir.split("\\")[:-1])+"\\Index\\index.adj","IN")
     data.addData("\\".join(dir.split("\\")[:-1])+"\\Index\\index.adv","IN")
@@ -69,9 +69,12 @@ if __name__ == "__main__":
     # data2 = process
     ontoNodes = OntoNodesSentenceExtractor.OntoNodesSentenceExtractor(data)
     print "------------ The fun starts here"
-    Evaluator.Evaluator.evaluate("normal","PR", ontoNodes)
-    Evaluator.Evaluator.evaluate("normal","PPR", ontoNodes)
-    Evaluator.Evaluator.evaluate("normal","KPP", ontoNodes)
+    #print "Results PageRank: "
+    #Evaluator.Evaluator.evaluate("normal","PR", ontoNodes)
+    #print "Results Personalized PageRank: "
+    #Evaluator.Evaluator.evaluate("normal","PPR", ontoNodes)
+    #print "Results Key Player Problem: "
+    # Evaluator.Evaluator.evaluate("normal","KPP", ontoNodes)
     Evaluator.Evaluator.evaluate("normal","iD", ontoNodes)
-    Evaluator.Evaluator.evaluate("normal","BWN", ontoNodes)
-    Evaluator.Evaluator.evaluate("normal","MF", ontoNodes)
+    #Evaluator.Evaluator.evaluate("normal","BWN", ontoNodes)
+    #Evaluator.Evaluator.evaluate("normal","MF", ontoNodes)

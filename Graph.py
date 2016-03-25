@@ -82,12 +82,6 @@ class Graph(object):
     
             
     def calculateKPP(self): #key player problem, not normalized. for each node, sum up inversed distances to each other node. the information for betweenness can be extracted almost identically, so the basic informations for betweenness are gathered in here, too. the lines where this happens are marked
-        if len(self.nodes) == 0:
-            for word in self.words:
-                if len(word.synsets) > 0:
-                    list(word.synsets)[0].kpp = 1
-            return
-            
         for node in self.nodes: #create a bft for each node
             kpp_value = 0.0
             node_list = self.nodes[:] #this is used to check if we have seen a node before
