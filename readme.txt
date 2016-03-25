@@ -83,67 +83,45 @@ Structure and Usage of the single program parts - Algorithm
 
     WordNetSearcher.py
     
-        Bla
-        
-        Bla
-        Example:
-            Bla
-        >>>
+        A class that reads the data and index files of WordNet and constructs subgraphs for each input sentence.
+	Step 1:
+	readIndexFiles() & readDataFiles() -> read WordNet index files (*.index) and read WordNet data files and create dictionaries for each word and its synsets.
+	
+	Step 2:
+	createTrees() -> creates all subtrees from the senses of all input words.
+	createTree() -> creates a subtree for each sense of the input words. Each sense is the root of the subtree. This method applies a breadth first search with a depth of 3.
+	
+	Step 3:
+	constructGraph() -> from the created subtrees, we construct a graph for applying the graph connectivity measures (see class Graph). For each pair of synsets that doesn't belong to the same word, we search for a path with a maximal length of 6. If we find such a path, we add this path to the final graph.
+
     
     
     Evaluator.py
     
-        Bla
-        
-        Bla
-        Example:
-            Bla
-        >>>
+        A class that coordinates the whole process and calculates the results.
+	evaluate() -> evaluates the results of any given graph measure comparing with the senses annotated in OntoNotes.
     
     OntoNodesSentenceExtractor.py
     
-        Bla
-        
-        Bla
-        Example:
-            Bla
-        >>>    
+        A class that works intersection between Evaluator.py and Data.py by providing single sentences to work on.
     
     Graph.py
     
-        Bla
-        
-        Bla
-        Example:
-            Bla
-        >>>
+        A class that calculates all graph measures.a
     
     Node.py
     
-        Bla
-        
-        Bla
-        Example:
-            Bla
-        >>>
+        A class that represents words in the sentence.
     
     Word.py
     
-        Bla
-        
-        Bla
-        Example:
-            Bla
-        >>>
+        	A class that represents a Word object containing the string of a word and all of its direct synsets. This object is used in the WordNetSearcher.
+
     
     Tree.py
    
-        Bla
-        
-        Bla
-        Example:
-            Bla
-        >>>
+       A class that represents a subtree that is constructed in the WordNetSearcher. It takes care of storing the information of all paths its root.
+
    
 Structure and Usage of the single program parts - Random other stuff
 
