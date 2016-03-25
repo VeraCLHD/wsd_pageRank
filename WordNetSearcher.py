@@ -86,8 +86,8 @@ class WordNetSearcher(object):
                 
         else:
             word.DeadWord = True
-            sys.stderr.write("This word is empty or was not found in WordNet 2.1")
-            print
+            #sys.stderr.write("This word is empty or was not found in WordNet 2.1")
+            #print
     
     def createTree(self, wurzel):
         queue = [wurzel]
@@ -146,7 +146,6 @@ class WordNetSearcher(object):
                 if other_node not in self.root_nodes:
                     node.tree_dictionary.pop(other_node)
         count = 0
-        print "noch nich done"
         for node in self.nodes: #search for all nodes that will belong to the graph
             if len(node.tree_dictionary.keys())>1: #this node only creates a new path if it is close enough to at least two root_nodes
                 dicti = list(node.tree_dictionary.keys())
@@ -165,8 +164,6 @@ class WordNetSearcher(object):
                                         break
                                     else:
                                         different_words = True
-                        if first_word == None:
-                            print dicti
                         if different_words == False:
                             if not key2 in first_word.synsets:
                                 for word in self.inputWords:
